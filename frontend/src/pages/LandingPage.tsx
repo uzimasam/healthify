@@ -15,24 +15,30 @@ export function LandingPage() {
           <div className="space-x-4">
             <Button variant="ghost">About</Button>
             <Button variant="ghost">Contact</Button>
-            <Button variant="outline">Login</Button>
+            <Link to="/login" className="inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-8 rounded-md px-3 text-xs group">
+              Get Started
+            </Link>
           </div>
         </nav>
         <div className="flex justify-center items-center min-h-screen">
-          <div className="container text-center mx-auto px-6 py-32">
+          <div className="container ">
             <div className="max-w-3xl mx-auto text-center">
               <h1 className="text-6xl font-bold tracking-tight mb-8">
+                Healthify.
+              </h1>
+              <h3 className="text-4xl text-gray-700 my-4">
                 Medical Supply Distribution,
                 <br />
                 Simplified.
-              </h1>
+              </h3>
               <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
                 Connecting healthcare providers with essential medical supplies through a streamlined distribution network.
               </p>
-              <Button size="lg" className="group">
+              <Link to="/login"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-10 px-8 group">
                 Get Started
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-              </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -126,25 +132,25 @@ export function LandingPage() {
             <div>
               <h4 className="font-semibold mb-4">Solutions</h4>
               <ul className="space-y-3 text-sm text-gray-600">
-                <li><a href="#" className="hover:text-black transition-colors">For Hospitals</a></li>
-                <li><a href="#" className="hover:text-black transition-colors">For Suppliers</a></li>
-                <li><a href="#" className="hover:text-black transition-colors">For Agencies</a></li>
+                <li><button className="hover:text-black transition-colors">For Hospitals</button></li>
+                <li><button className="hover:text-black transition-colors">For Suppliers</button></li>
+                <li><button className="hover:text-black transition-colors">For Agencies</button></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Company</h4>
               <ul className="space-y-3 text-sm text-gray-600">
-                <li><a href="#" className="hover:text-black transition-colors">About Us</a></li>
-                <li><a href="#" className="hover:text-black transition-colors">Contact</a></li>
-                <li><a href="#" className="hover:text-black transition-colors">Careers</a></li>
+                <li><button className="hover:text-black transition-colors">About Us</button></li>
+                <li><button className="hover:text-black transition-colors">Contact</button></li>
+                <li><button className="hover:text-black transition-colors">Careers</button></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Legal</h4>
               <ul className="space-y-3 text-sm text-gray-600">
-                <li><a href="#" className="hover:text-black transition-colors">Privacy</a></li>
-                <li><a href="#" className="hover:text-black transition-colors">Terms</a></li>
-                <li><a href="#" className="hover:text-black transition-colors">Cookies</a></li>
+                <li><button className="hover:text-black transition-colors">Privacy</button></li>
+                <li><button className="hover:text-black transition-colors">Terms</button></li>
+                <li><button className="hover:text-black transition-colors">Cookies</button></li>
               </ul>
             </div>
           </div>
