@@ -18,20 +18,22 @@ export function LandingPage() {
             <Button variant="outline">Login</Button>
           </div>
         </nav>
-        
-        <div className="container mx-auto px-6 py-32">
-          <div className="max-w-3xl">
-            <h1 className="text-6xl font-bold tracking-tight mb-8">
-              Medical Supply Distribution, 
-              <span className="block">Simplified.</span>
-            </h1>
-            <p className="text-xl text-gray-600 mb-12 max-w-2xl">
-              Connecting healthcare providers with essential medical supplies through a streamlined distribution network.
-            </p>
-            <Button size="lg" className="group">
-              Get Started 
-              <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-            </Button>
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="container text-center mx-auto px-6 py-32">
+            <div className="max-w-3xl mx-auto text-center">
+              <h1 className="text-6xl font-bold tracking-tight mb-8">
+                Medical Supply Distribution,
+                <br />
+                Simplified.
+              </h1>
+              <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
+                Connecting healthcare providers with essential medical supplies through a streamlined distribution network.
+              </p>
+              <Button size="lg" className="group">
+                Get Started
+                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </div>
           </div>
         </div>
       </header>
@@ -46,11 +48,11 @@ export function LandingPage() {
               <p className="text-gray-600 mb-6">
                 Streamline your medical supply procurement with real-time inventory tracking.
               </p>
-              <Link 
-                to="/register/hospital" 
+              <Link
+                to="/register/hospital"
                 className="inline-flex items-center text-sm font-medium group-hover:underline"
               >
-                Join as Hospital 
+                Join as Hospital
                 <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </div>
@@ -61,11 +63,11 @@ export function LandingPage() {
               <p className="text-gray-600 mb-6">
                 Expand your reach and efficiently manage distribution to healthcare facilities.
               </p>
-              <Link 
-                to="/register/supplier" 
+              <Link
+                to="/register/supplier"
                 className="inline-flex items-center text-sm font-medium group-hover:underline"
               >
-                Join as Supplier 
+                Join as Supplier
                 <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </div>
@@ -76,11 +78,11 @@ export function LandingPage() {
               <p className="text-gray-600 mb-6">
                 Optimize your distribution network and supply chain operations.
               </p>
-              <Link 
-                to="/register/agency" 
+              <Link
+                to="/register/agency"
                 className="inline-flex items-center text-sm font-medium group-hover:underline"
               >
-                Learn More 
+                Learn More
                 <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </div>
