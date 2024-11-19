@@ -2,11 +2,13 @@ package routes
 
 import (
 	"errors"
-	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 	"healthify/backend/models"
 	"healthify/backend/storage"
+	"healthify/backend/utils"
 	"strings"
+
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 
 	"github.com/kataras/iris/v12"
 )
@@ -16,25 +18,25 @@ func Register(ctx iris.Context) {
 	var orgInput OrganizationInput
 	err := ctx.ReadJSON(&orgInput)
 	if err != nil {
-		ctx.StopWithJSON(iris.StatusBadRequest, iris.Map{"error": "Invalid request"})
+		utils.HandleValidationError(err, ctx)
 		return
 	}
 
 	var newOrg models.Organization
 	orgExists, orgExistsErr := getAndHandleOrganizationExistsError(&newOrg, orgInput.Email)
 	if orgExistsErr != nil {
-		ctx.StopWithJSON(iris.StatusInternalServerError, iris.Map{"error": "Internal server error", "details": orgExistsErr.Error()})
+		utils.CreateInternalError(ctx)
 		return
 	}
 
 	if orgExists {
-		ctx.StopWithJSON(iris.StatusBadRequest, iris.Map{"error": "Organization already exists"})
+		utils.CreateError(iris.StatusConflict, "Organization already exists", "An organization with this email already exists", ctx)
 		return
 	}
 
 	hashedPassword, hashErr := hashAndSaltPassword(orgInput.Password)
 	if hashErr != nil {
-		ctx.StopWithJSON(iris.StatusInternalServerError, iris.Map{"error": "Internal server error2"})
+		utils.CreateInternalError(ctx)
 		return
 	}
 
