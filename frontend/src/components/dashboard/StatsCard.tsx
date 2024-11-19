@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DashboardStats } from "@/types";
 
 interface StatsCardProps {
-  stats: DashboardStats;
+  readonly stats: DashboardStats;
 }
 
 export function StatsCard({ stats }: StatsCardProps) {

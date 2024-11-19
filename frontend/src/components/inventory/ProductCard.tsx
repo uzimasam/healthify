@@ -8,7 +8,7 @@ interface ProductCardProps {
   onEdit: (product: Product) => void;
 }
 
-export function ProductCard({ product, onEdit }: ProductCardProps) {
+export function ProductCard({ product, onEdit }: Readonly<ProductCardProps>) {
   const isLowStock = product.stock < 10;
 
   return (

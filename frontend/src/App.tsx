@@ -1,73 +1,29 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
-import { StatsCard } from "@/components/dashboard/StatsCard";
-import { ProductCard } from "@/components/inventory/ProductCard";
-import { DashboardStats, Product } from "@/types";
-import { ForgotPasswordPage } from "@/pages/ForgotPasswordPage";
 import { LandingPage } from "@/pages/LandingPage";
 import { LoginPage } from "@/pages/LoginPage";
 import { RegisterPage } from "@/pages/RegisterPage";
+import { ForgotPasswordPage } from "@/pages/ForgotPasswordPage";
+import { DashboardPage } from "@/pages/DashboardPage";
+import { InventoryPage } from "@/pages/InventoryPage";
+import { OrdersPage } from "@/pages/OrdersPage";
+import { SuppliersPage } from "@/pages/SuppliersPage";
+import { HospitalsPage } from "@/pages/HospitalsPage";
+import { AnalyticsPage } from "@/pages/AnalyticsPage";
+import { SettingsPage } from "@/pages/SettingsPage";
 
-// Mock data
-const mockStats: DashboardStats = {
-  totalOrders: 156,
-  pendingOrders: 23,
-  lowStockItems: 8,
-  revenue: 52890,
-};
-
-const mockProducts: Product[] = [
-  {
-    id: "1",
-    name: "Surgical Masks",
-    category: "PPE",
-    stock: 5,
-    price: 12.99,
-    unit: "box",
-    manufacturer: "MedTech Inc",
-    expiryDate: "2024-12-31",
-    image: "https://images.unsplash.com/photo-1584634731339-252c581abfc5?auto=format&fit=crop&q=80&w=500",
-  },
-  {
-    id: "2",
-    name: "Nitrile Gloves",
-    category: "PPE",
-    stock: 150,
-    price: 24.99,
-    unit: "box",
-    manufacturer: "SafeCare",
-    expiryDate: "2024-10-15",
-    image: "https://images.unsplash.com/photo-1584636778264-b96d5bb83beb?auto=format&fit=crop&q=80&w=500",
-  },
-];
-
-function Dashboard() {
+// Layout wrapper for dashboard routes
+function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-3xl font-bold">Dashboard</h1>
-      <StatsCard stats={mockStats} />
-    </div>
-  );
-}
-
-function Inventory() {
-  const handleEdit = (product: Product) => {
-    console.log("Edit product:", product);
-  };
-
-  return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-3xl font-bold">Inventory</h1>
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {mockProducts.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            onEdit={handleEdit}
-          />
-        ))}
+    <div className="h-full relative">
+      <div className="hidden h-full md:flex md:w-72 md:flex-col md:fixed md:inset-y-0 z-[80] bg-gray-900">
+        <Sidebar />
       </div>
+      <main className="md:pl-72">
+        <Header />
+        {children}
+      </main>
     </div>
   );
 }
@@ -76,27 +32,23 @@ function App() {
   return (
     <Router>
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route
-          path="/dashboard/*"
-          element={
-            <div className="h-full relative">
-              <div className="hidden h-full md:flex md:w-72 md:flex-col md:fixed md:inset-y-0 z-[80] bg-gray-900">
-                <Sidebar />
-              </div>
-              <main className="md:pl-72">
-                <Header />
-                <Routes>
-                  <Route index element={<Dashboard />} />
-                  <Route path="inventory" element={<Inventory />} />
-                </Routes>
-              </main>
-            </div>
-          }
-        />
+
+        {/* Protected Dashboard Routes */}
+        <Route path="/dashboard" element={<DashboardLayout><DashboardPage /></DashboardLayout>} />
+        <Route path="/dashboard/inventory" element={<DashboardLayout><InventoryPage /></DashboardLayout>} />
+        <Route path="/dashboard/orders" element={<DashboardLayout><OrdersPage /></DashboardLayout>} />
+        <Route path="/dashboard/suppliers" element={<DashboardLayout><SuppliersPage /></DashboardLayout>} />
+        <Route path="/dashboard/hospitals" element={<DashboardLayout><HospitalsPage /></DashboardLayout>} />
+        <Route path="/dashboard/analytics" element={<DashboardLayout><AnalyticsPage /></DashboardLayout>} />
+        <Route path="/dashboard/settings" element={<DashboardLayout><SettingsPage /></DashboardLayout>} />
+
+        {/* Catch all route */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );

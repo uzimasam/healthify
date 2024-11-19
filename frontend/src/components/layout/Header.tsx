@@ -12,8 +12,8 @@ export function Header() {
     <header className="border-b">
       <div className="flex h-16 items-center px-4 gap-4">
         <Package className="h-6 w-6" />
-        <h2 className="text-lg font-semibold">MedSupply Hub</h2>
-        
+        <h2 className="text-lg font-semibold">Healthify</h2>
+
         <div className="ml-auto flex items-center space-x-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -26,7 +26,7 @@ export function Header() {
               <DropdownMenuItem>Low stock alert: Surgical Masks</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
