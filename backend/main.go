@@ -16,7 +16,7 @@ func main() {
 
 	organizationRoutes := app.Party("/api/organizations")
 	{
-		organizationRoutes.Post("/register", routes.Register) 
+		organizationRoutes.Post("/register", routes.Register)
 	}
 
 	app.Listen(":8020")

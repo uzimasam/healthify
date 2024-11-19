@@ -1,12 +1,12 @@
 package routes
 
 import (
-	"healthify/backend/models"
-	"healthify/backend/storage"
-	"strings"
 	"errors"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"healthify/backend/models"
+	"healthify/backend/storage"
+	"strings"
 
 	"github.com/kataras/iris/v12"
 )
@@ -31,7 +31,7 @@ func Register(ctx iris.Context) {
 		ctx.StopWithJSON(iris.StatusBadRequest, iris.Map{"error": "Organization already exists"})
 		return
 	}
-	
+
 	hashedPassword, hashErr := hashAndSaltPassword(orgInput.Password)
 	if hashErr != nil {
 		ctx.StopWithJSON(iris.StatusInternalServerError, iris.Map{"error": "Internal server error2"})
@@ -54,24 +54,25 @@ func Register(ctx iris.Context) {
 			"email": newOrg.Email,
 			"type":  newOrg.Type,
 		},
-	})}
+	})
+}
 
 // getAndHandleOrganizationExistsError checks if an organization with the given email exists
 func getAndHandleOrganizationExistsError(org *models.Organization, email string) (exists bool, err error) {
-    orgExistsQuery := storage.DB.Where("email = ?", strings.ToLower(email)).First(org)
-    if orgExistsQuery.Error != nil {
-        if errors.Is(orgExistsQuery.Error, gorm.ErrRecordNotFound) {
-            return false, nil
-        }
-        return false, orgExistsQuery.Error
-    }
+	orgExistsQuery := storage.DB.Where("email = ?", strings.ToLower(email)).First(org)
+	if orgExistsQuery.Error != nil {
+		if errors.Is(orgExistsQuery.Error, gorm.ErrRecordNotFound) {
+			return false, nil
+		}
+		return false, orgExistsQuery.Error
+	}
 
-    orgExists := orgExistsQuery.RowsAffected > 0
-    if orgExists {
-        return true, nil
-    }
-    
-    return false, nil
+	orgExists := orgExistsQuery.RowsAffected > 0
+	if orgExists {
+		return true, nil
+	}
+
+	return false, nil
 }
 
 // hashAndSaltPassword hashes and salts the password
