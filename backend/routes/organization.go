@@ -15,7 +15,7 @@ import (
 
 // Register registers a new organization
 func Register(ctx iris.Context) {
-	var orgInput OrganizationInput
+	var orgInput OrganizationRegisterInput
 	err := ctx.ReadJSON(&orgInput)
 	if err != nil {
 		utils.HandleValidationError(err, ctx)
@@ -59,6 +59,52 @@ func Register(ctx iris.Context) {
 	})
 }
 
+// Login logs in an organization
+func Login(ctx iris.Context) {
+	var orgInput OrganizationLoginInput
+	err := ctx.ReadJSON(&orgInput)
+	if err != nil {
+		utils.HandleValidationError(err, ctx)
+		return
+	}
+
+	var existingOrg models.Organization
+	errorMessage := "Invalid email or password"
+	orgExists, orgExistsErr := getAndHandleOrganizationExistsError(&existingOrg, orgInput.Email)
+	if orgExistsErr != nil {
+		utils.CreateInternalError(ctx)
+		return
+	}
+
+	if !orgExists {
+		utils.CreateError(iris.StatusUnauthorized, "Credentials Error", errorMessage, ctx)
+		return
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(existingOrg.Password), []byte(orgInput.Password))
+	if err != nil {
+		utils.CreateError(iris.StatusUnauthorized, "Credentials Error", errorMessage, ctx)
+		return
+	}
+
+	token, tokenErr := utils.GenerateToken(existingOrg.ID, existingOrg.Type)
+
+	if tokenErr != nil {
+		utils.CreateInternalError(ctx)
+		return
+	}
+
+	ctx.StopWithJSON(iris.StatusOK, iris.Map{
+		"message": "Organization logged in",
+		"organization": iris.Map{
+			"name":  existingOrg.Name,
+			"email": existingOrg.Email,
+			"type":  existingOrg.Type,
+		},
+		"token": token,
+	})
+}
+
 // getAndHandleOrganizationExistsError checks if an organization with the given email exists
 func getAndHandleOrganizationExistsError(org *models.Organization, email string) (exists bool, err error) {
 	orgExistsQuery := storage.DB.Where("email = ?", strings.ToLower(email)).First(org)
@@ -87,10 +133,16 @@ func hashAndSaltPassword(password string) (string, error) {
 	return string(bytes), nil
 }
 
-// OrganizationInput is the input for registering an organization
-type OrganizationInput struct {
+// OrganizationRegisterInput is the input for registering an organization
+type OrganizationRegisterInput struct {
 	Name     string `json:"name" validate:"required,max=512"`
 	Type     string `json:"type" validate:"required,max=256"`
+	Email    string `json:"email" validate:"required,max=256"`
+	Password string `json:"password" validate:"required,min=8,max=256"`
+}
+
+// OrganizationLoginInput is the input for logging in an organization
+type OrganizationLoginInput struct {
 	Email    string `json:"email" validate:"required,max=256"`
 	Password string `json:"password" validate:"required,min=8,max=256"`
 }

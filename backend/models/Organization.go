@@ -14,8 +14,8 @@ func (o *Organization) TableName() string {
 	return "organizations"
 }
 
-// OrganizationInput is the input for registering an organization
-type OrganizationInput struct {
+// OrganizationRegisterInput is the input for registering an organization
+type OrganizationRegisterInput struct {
 	Name     string `json:"name" validate:"required,max=512"`
 	Type     string `json:"type" validate:"required,max=512"`
 	Email    string `json:"email" validate:"required,email"`
