@@ -1,6 +1,7 @@
 package main
 
 import (
+	"healthify/backend/routes"
 	"healthify/backend/storage"
 
 	"github.com/joho/godotenv"
@@ -13,7 +14,10 @@ func main() {
 
 	app := iris.New()
 
-	
+	organizationRoutes := app.Party("/api/organizations")
+	{
+		organizationRoutes.Post("/register", routes.Register) 
+	}
 
 	app.Listen(":8020")
 }
