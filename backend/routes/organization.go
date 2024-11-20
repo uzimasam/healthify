@@ -97,6 +97,7 @@ func Login(ctx iris.Context) {
 	ctx.StopWithJSON(iris.StatusOK, iris.Map{
 		"message": "Organization logged in",
 		"organization": iris.Map{
+			"id":    existingOrg.ID,
 			"name":  existingOrg.Name,
 			"email": existingOrg.Email,
 			"type":  existingOrg.Type,

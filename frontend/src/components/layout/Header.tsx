@@ -6,8 +6,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import React, { useContext } from "react";
+import { OrganizationContext } from "@/context";
+import { useAuth } from "@/hooks/use-auth";
 
-export function Header() {
+const Header: React.FC = () => {
+  const { organization } = useContext(OrganizationContext);
+  const { logout } = useAuth();
   return (
     <header className="border-b">
       <div className="flex h-16 items-center px-4 gap-4">
@@ -34,9 +39,11 @@ export function Header() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem>
+                {organization? `Welcome, ${organization.name}` : "Welcome"}
+              </DropdownMenuItem>
               <DropdownMenuItem>Help</DropdownMenuItem>
-              <DropdownMenuItem>Logout</DropdownMenuItem>
+              <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -44,3 +51,5 @@ export function Header() {
     </header>
   );
 }
+
+export default Header;

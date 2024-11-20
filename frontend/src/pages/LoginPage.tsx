@@ -1,21 +1,49 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Package } from "lucide-react";
+import { useMutation } from "react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { loginOrganization } from "@/services/organization";
+import { useOrganizer } from "@/hooks/use-organizer";
+import { Organization } from "@/types/organization";
 
 export function LoginPage() {
-  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const { login } = useOrganizer();
 
-  async function onSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    setIsLoading(true);
+  const nativeLogin = useMutation(
+    async (values: { email: string; password: string }) => {
+      const result = await loginOrganization(values.email, values.password);
+      if (result && 'organization' in result) {
+        const organization = result.organization as Organization;
+        sessionStorage.setItem("organization", JSON.stringify(organization));
+        login(organization);
+        navigate("/dashboard");
+      } else {
+        throw new Error("Invalid credentials");
+      }
 
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-  }
+    },
+    {
+      onError: (error: Error) => {
+        console.error(error);
+      },
+    }
+  );
+
+  const [values, setValues] = useState({
+    email: "",
+    password: "",
+  });
+
+  const isLoading = nativeLogin.isLoading;
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    nativeLogin.mutate(values);
+  };
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
@@ -45,6 +73,8 @@ export function LoginPage() {
                 autoComplete="email"
                 autoCorrect="off"
                 disabled={isLoading}
+                value={values.email}
+                onChange={(e) => setValues({ ...values, email: e.target.value })}
                 required
               />
             </div>
@@ -62,6 +92,8 @@ export function LoginPage() {
                 id="password"
                 type="password"
                 disabled={isLoading}
+                value={values.password}
+                onChange={(e) => setValues({ ...values, password: e.target.value })}
                 required
               />
             </div>

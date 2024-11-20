@@ -5,8 +5,12 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
+import { useContext } from "react";
+import { OrganizationContext } from "@/context";
 
 export function SettingsPage() {
+    const { organization } = useContext(OrganizationContext);
+
     return (
         <div className="flex-1 space-y-6 p-8 pt-6">
             <div className="flex items-center justify-between">
@@ -31,20 +35,11 @@ export function SettingsPage() {
                         <CardContent className="space-y-6">
                             <div className="space-y-2">
                                 <Label htmlFor="agency-name">Agency Name</Label>
-                                <Input id="agency-name" defaultValue="Healthify Distribution Agency" />
+                                <Input id="agency-name" defaultValue={organization? organization.name : ""} />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="contact-email">Primary Contact Email</Label>
-                                <Input id="contact-email" type="email" defaultValue="admin@healthify.com" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="timezone">Timezone</Label>
-                                <select id="timezone" className="w-full p-2 border rounded-md">
-                                    <option>UTC-05:00 Eastern Time</option>
-                                    <option>UTC-06:00 Central Time</option>
-                                    <option>UTC-07:00 Mountain Time</option>
-                                    <option>UTC-08:00 Pacific Time</option>
-                                </select>
+                                <Input id="contact-email" type="email" defaultValue={organization? organization.email : ""} />
                             </div>
                         </CardContent>
                     </Card>
