@@ -42,6 +42,11 @@ const routes = [
     href: "/dashboard/analytics",
   },
   {
+    label: "Reports",
+    icon: ClipboardList,
+    href: "/dashboard/reports",
+  },
+  {
     label: "Settings",
     icon: Settings,
     href: "/dashboard/settings",

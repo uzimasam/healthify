@@ -15,6 +15,7 @@ import { HospitalsPage } from "@/pages/HospitalsPage";
 import { AnalyticsPage } from "@/pages/AnalyticsPage";
 import { SettingsPage } from "@/pages/SettingsPage";
 import { Organization } from './types/organization';
+import { ReportsPage } from './pages/ReportsPage';
 import { OrganizationContext } from './context';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -68,6 +69,7 @@ function App() {
             <Route path="/dashboard/suppliers" element={<ProtectedRoute><DashboardLayout><SuppliersPage /></DashboardLayout></ProtectedRoute>} />
             <Route path="/dashboard/hospitals" element={<ProtectedRoute><DashboardLayout><HospitalsPage /></DashboardLayout></ProtectedRoute>} />
             <Route path="/dashboard/analytics" element={<ProtectedRoute><DashboardLayout><AnalyticsPage /></DashboardLayout></ProtectedRoute>} />
+            <Route path='/dashboard/reports' element={<ProtectedRoute><DashboardLayout><ReportsPage /></DashboardLayout></ProtectedRoute>} />
             <Route path="/dashboard/settings" element={<ProtectedRoute><DashboardLayout><SettingsPage /></DashboardLayout></ProtectedRoute>} />
           </Routes>
         </Router>
