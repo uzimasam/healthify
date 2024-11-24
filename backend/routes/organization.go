@@ -42,6 +42,7 @@ func Register(ctx iris.Context) {
 
 	newOrg = models.Organization{
 		Name:     orgInput.Name,
+		Type:     "supplier",
 		Email:    strings.ToLower(orgInput.Email),
 		Password: hashedPassword,
 	}

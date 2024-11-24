@@ -2,6 +2,8 @@
 -- +goose StatementBegin
 DROP TABLE IF EXISTS organizations;
 
+DROP TYPE IF EXISTS org_type;
+
 CREATE TYPE org_type AS ENUM ('supplier', 'hospital', 'admin');
 
 CREATE TABLE
@@ -20,10 +22,10 @@ CREATE UNIQUE INDEX organizations_email_uindex ON organizations (email);
 -- +goose StatementEnd
 -- +goose Down
 -- +goose StatementBegin
-DROP TYPE IF EXISTS org_type;
 
 DROP INDEX IF EXISTS organizations_email_uindex;
 
 DROP TABLE IF EXISTS organizations;
 
+DROP TYPE IF EXISTS org_type;
 -- +goose StatementEnd
