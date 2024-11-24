@@ -8,6 +8,8 @@ type DataRes = { data: Organization };
 export const registerOrganization = async (
     name: string,
     email: string,
+    phone: string,
+    niche: string,
     password: string,
     confirmPassword: string
 ) => {
@@ -18,6 +20,8 @@ export const registerOrganization = async (
         const { data }: DataRes = await axios.post(endpoints.register, {
             name,
             email,
+            phone,
+            niche,
             password,
         });
         if (data) {

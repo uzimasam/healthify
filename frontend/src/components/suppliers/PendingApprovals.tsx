@@ -27,7 +27,7 @@ const pendingSuppliers = [
     type: "Medical Equipment",
     location: "Eldoret, ELD",
     applicationDate: "2024-03-15",
-    documents: ["Business License", "FDA Certification", "Insurance"],
+    documents: ["Business License", "Insurance"],
     status: "pending_review",
   },
   {
@@ -36,7 +36,7 @@ const pendingSuppliers = [
     type: "Pharmaceuticals",
     location: "Thika, THK",
     applicationDate: "2024-03-14",
-    documents: ["Business License", "DEA License", "Insurance"],
+    documents: ["Business License", "Insurance"],
     status: "pending_documents",
   },
   {
@@ -45,7 +45,7 @@ const pendingSuppliers = [
     type: "Medical Supplies",
     location: "Mombasa, MSA",
     applicationDate: "2024-03-13",
-    documents: ["Business License", "Quality Certification"],
+    documents: ["Business License", "Insurance"],
     status: "pending_verification",
   },
 ];

@@ -43,6 +43,8 @@ func Register(ctx iris.Context) {
 	newOrg = models.Organization{
 		Name:     orgInput.Name,
 		Type:     "supplier",
+		Phone:    orgInput.Phone,
+		Niche:    orgInput.Niche,
 		Email:    strings.ToLower(orgInput.Email),
 		Password: hashedPassword,
 	}
@@ -139,6 +141,8 @@ func hashAndSaltPassword(password string) (string, error) {
 type OrganizationRegisterInput struct {
 	Name     string `json:"name" validate:"required,max=512"`
 	Email    string `json:"email" validate:"required,max=256"`
+	Phone    string `json:"phone" validate:"required,max=16"`
+	Niche    string `json:"niche" validate:"required,max=256"`
 	Password string `json:"password" validate:"required,min=8,max=256"`
 }
 

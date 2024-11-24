@@ -7,6 +7,8 @@ type Organization struct {
 	Name     string `json:"name"`
 	Type     string `json:"type"`
 	Email    string `json:"email"`
+	Phone    string `json:"phone"`
+	Niche    string `json:"niche"`
 	Password string `json:"password"`
 }
 
@@ -15,6 +17,8 @@ type OrganizationRegisterInput struct {
 	Name     string `json:"name" validate:"required,max=512"`
 	Type     string `json:"type" validate:"required,max=512"`
 	Email    string `json:"email" validate:"required,email"`
+	Phone	string `json:"phone" validate:"required,max=16"`
+	Niche    string `json:"niche" validate:"required,max=256"`
 	Password string `json:"password" validate:"required,min=8"`
 }
 
@@ -24,6 +28,8 @@ type OrganizationOutput struct {
 	Name  string `json:"name"`
 	Type  string `json:"type"`
 	Email string `json:"email"`
+	Phone string `json:"phone"`
+	Niche string `json:"niche"`
 }
 
 // OrganizationLoginInput is the input for logging in an organization

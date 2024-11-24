@@ -14,8 +14,8 @@ export function RegisterPage() {
     const { login } = useOrganizer();
 
     const nativeRegister = useMutation(
-        async (values: { name: string; email: string; password: string; confirmPassword: string }) => {
-            const result = await registerOrganization(values.name, values.email, values.password, values.confirmPassword);
+        async (values: { name: string; email: string; phone: string; niche: string; password: string; confirmPassword: string }) => {
+            const result = await registerOrganization(values.name, values.email, values.phone, values.niche, values.password, values.confirmPassword);
             if (result && 'organization' in result) {
                 const organization = result.organization as Organization;
                 sessionStorage.setItem("organization", JSON.stringify(organization));
@@ -35,6 +35,8 @@ export function RegisterPage() {
     const [values, setValues] = useState({
         name: "",
         email: "",
+        phone: "",
+        niche: "",
         password: "",
         confirmPassword: "",
     });
@@ -56,7 +58,7 @@ export function RegisterPage() {
                             <span className="text-2xl font-bold">Healthify</span>
                         </div>
                         <h1 className="text-2xl font-semibold tracking-tight">
-                            Create an account
+                            Create a Supplier account
                         </h1>
                         <p className="text-sm text-gray-500">
                             Enter your details to get started
@@ -79,7 +81,7 @@ export function RegisterPage() {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
+                            <Label htmlFor="email">Contact Email</Label>
                             <Input
                                 id="email"
                                 placeholder="name@example.com"
@@ -90,6 +92,36 @@ export function RegisterPage() {
                                 disabled={isLoading}
                                 value={values.email}
                                 onChange={(e) => setValues({ ...values, email: e.target.value })}
+                                required
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="phone">Contact Phone</Label>
+                            <Input
+                                id="phone"
+                                placeholder="Enter phone number"
+                                type="tel"
+                                autoCapitalize="none"
+                                autoComplete="tel"
+                                autoCorrect="off"
+                                disabled={isLoading}
+                                value={values.phone}
+                                onChange={(e) => setValues({ ...values, phone: e.target.value })}
+                                required
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="niche">Organization Niche</Label>
+                            <Input
+                                id="niche"
+                                placeholder="Enter organization niche e.g. Pharmaceuticals"
+                                type="text"
+                                autoCapitalize="words"
+                                autoComplete="organization"
+                                autoCorrect="off"
+                                disabled={isLoading}
+                                value={values.niche}
+                                onChange={(e) => setValues({ ...values, niche: e.target.value })}
                                 required
                             />
                         </div>
