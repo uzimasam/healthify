@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
+import React, { useEffect, useMemo, useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import Header from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
@@ -22,7 +22,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 const queryClient = new QueryClient();
 
 // Layout wrapper for dashboard routes
-function DashboardLayout({ children }: { children: React.ReactNode }) {
+function DashboardLayout({ children }: { readonly children: React.ReactNode }) {
   return (
     <div className="h-full relative">
       <div className="hidden h-full md:flex md:w-72 md:flex-col md:fixed md:inset-y-0 z-[80] bg-gray-900">

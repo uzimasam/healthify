@@ -8,12 +8,24 @@ import { AutomationCard } from "@/components/dashboard/AutomationCard";
 import { SupplierList } from "@/components/dashboard/SupplierList";
 import { HospitalList } from "@/components/dashboard/HospitalList";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
+import { useAgencyDashboardData } from "@/services/agency";
 
 export function DashboardPage() {
-    const [activeSuppliers, setActiveSuppliers] = useState(24);
-    const [activeHospitals, setActiveHospitals] = useState(156);
-    const [pendingApprovals, setPendingApprovals] = useState(3);
-    const [lowStockAlerts, setLowStockAlerts] = useState(8);
+    const [activeSuppliers, setActiveSuppliers] = useState(0);
+    const [activeHospitals, setActiveHospitals] = useState(0);
+    const [pendingApprovals, setPendingApprovals] = useState(0);
+    const [lowStockAlerts, setLowStockAlerts] = useState(0);
+
+    useEffect(() => {
+        async function fetchDashboardData() {
+            const data = await useAgencyDashboardData();
+            setActiveSuppliers(data.activeSuppliers);
+            setActiveHospitals(data.activeHospitals);
+            setPendingApprovals(data.pendingApprovals);
+        }
+        fetchDashboardData();
+    }, []);
+
 
     return (
         <div className="flex-1 space-y-6 p-8 pt-6">
