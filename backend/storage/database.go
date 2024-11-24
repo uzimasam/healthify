@@ -3,8 +3,6 @@ package storage
 import (
 	"os"
 
-	"healthify/backend/models"
-
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -29,16 +27,8 @@ func ConnectDB() *gorm.DB {
 	return db
 }
 
-// MigrateDB migrates the database schema
-func MigrateDB(db *gorm.DB) {
-	db.AutoMigrate(
-		&models.Organization{},
-	)
-}
-
 // InitDB initializes the database
 func InitDB() *gorm.DB {
 	db := ConnectDB()
-	MigrateDB(db)
 	return db
 }

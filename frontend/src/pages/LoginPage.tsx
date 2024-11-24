@@ -91,6 +91,7 @@ export function LoginPage() {
               <Input
                 id="password"
                 type="password"
+                placeholder="Enter your password"
                 disabled={isLoading}
                 value={values.password}
                 onChange={(e) => setValues({ ...values, password: e.target.value })}
@@ -127,7 +128,7 @@ export function LoginPage() {
             <p className="text-gray-500">
               Dr. Sarah Chen
               <br />
-              Chief of Surgery, Metropolitan Hospital
+              Chief of Surgery, Agakhan Hospital
             </p>
           </div>
         </div>

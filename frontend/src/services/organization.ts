@@ -8,14 +8,16 @@ type DataRes = { data: Organization };
 export const registerOrganization = async (
     name: string,
     email: string,
-    type: string,
-    password: string
+    password: string,
+    confirmPassword: string
 ) => {
+    if (password !== confirmPassword) {
+        throw new Error('Passwords do not match');
+    }
     try {
         const { data }: DataRes = await axios.post(endpoints.register, {
             name,
             email,
-            type,
             password,
         });
         if (data) {

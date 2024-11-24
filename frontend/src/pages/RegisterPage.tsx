@@ -1,35 +1,50 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Package, Hospital, Truck, Building2 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { useOrganizer } from "@/hooks/use-organizer";
+import { useMutation } from "react-query";
+import { Organization } from "@/types/organization";
+import { registerOrganization } from "@/services/organization";
 
 export function RegisterPage() {
-    const [isLoading, setIsLoading] = useState(false);
-    const [userType, setUserType] = useState("");
+    const navigate = useNavigate();
+    const { login } = useOrganizer();
 
-    async function onSubmit(event: React.FormEvent) {
-        event.preventDefault();
-        setIsLoading(true);
+    const nativeRegister = useMutation(
+        async (values: { name: string; email: string; password: string; confirmPassword: string }) => {
+            const result = await registerOrganization(values.name, values.email, values.password, values.confirmPassword);
+            if (result && 'organization' in result) {
+                const organization = result.organization as Organization;
+                sessionStorage.setItem("organization", JSON.stringify(organization));
+                login(organization);
+                navigate("/dashboard");
+            } else {
+                throw new Error("Registration failed");
+            }
+        },
+        {
+            onError: (error: Error) => {
+                console.error(error);
+            },
+        }
+    );
 
-        setTimeout(() => {
-            setIsLoading(false);
-        }, 1000);
+    const [values, setValues] = useState({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+    });
+
+    const isLoading = nativeRegister.isLoading;
+
+    const onSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        nativeRegister.mutate(values);
     }
-
-    const userTypeIcons = {
-        hospital: Hospital,
-        supplier: Truck,
-        agency: Building2,
-    };
 
     return (
         <div className="min-h-screen grid lg:grid-cols-2">
@@ -49,23 +64,17 @@ export function RegisterPage() {
                     </div>
                     <form onSubmit={onSubmit} className="space-y-4">
                         <div className="space-y-2">
-                            <Label>Account Type</Label>
-                            <Select onValueChange={setUserType}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select account type" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="hospital">Hospital</SelectItem>
-                                    <SelectItem value="supplier">Supplier</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-2">
                             <Label htmlFor="name">Organization Name</Label>
                             <Input
                                 id="name"
                                 placeholder="Enter organization name"
+                                type="text"
+                                autoCapitalize="words"
+                                autoComplete="organization"
+                                autoCorrect="off"
                                 disabled={isLoading}
+                                value={values.name}
+                                onChange={(e) => setValues({ ...values, name: e.target.value })}
                                 required
                             />
                         </div>
@@ -79,6 +88,8 @@ export function RegisterPage() {
                                 autoComplete="email"
                                 autoCorrect="off"
                                 disabled={isLoading}
+                                value={values.email}
+                                onChange={(e) => setValues({ ...values, email: e.target.value })}
                                 required
                             />
                         </div>
@@ -89,6 +100,8 @@ export function RegisterPage() {
                                 type="password"
                                 placeholder="Enter a password"
                                 disabled={isLoading}
+                                value={values.password}
+                                onChange={(e) => setValues({ ...values, password: e.target.value })}
                                 required
                             />
                         </div>
@@ -99,6 +112,8 @@ export function RegisterPage() {
                                 type="password"
                                 placeholder="Re-enter your password"
                                 disabled={isLoading}
+                                value={values.confirmPassword}
+                                onChange={(e) => setValues({ ...values, confirmPassword: e.target.value })}
                                 required
                             />
                         </div>

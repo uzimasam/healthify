@@ -10,10 +10,6 @@ type Organization struct {
 	Password string `json:"password"`
 }
 
-func (o *Organization) TableName() string {
-	return "organizations"
-}
-
 // OrganizationRegisterInput is the input for registering an organization
 type OrganizationRegisterInput struct {
 	Name     string `json:"name" validate:"required,max=512"`

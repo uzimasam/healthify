@@ -42,7 +42,6 @@ func Register(ctx iris.Context) {
 
 	newOrg = models.Organization{
 		Name:     orgInput.Name,
-		Type:     orgInput.Type,
 		Email:    strings.ToLower(orgInput.Email),
 		Password: hashedPassword,
 	}
@@ -52,6 +51,7 @@ func Register(ctx iris.Context) {
 	ctx.StopWithJSON(iris.StatusCreated, iris.Map{
 		"message": "Organization created",
 		"organization": iris.Map{
+			"id":    newOrg.ID,
 			"name":  newOrg.Name,
 			"email": newOrg.Email,
 			"type":  newOrg.Type,
@@ -137,7 +137,6 @@ func hashAndSaltPassword(password string) (string, error) {
 // OrganizationRegisterInput is the input for registering an organization
 type OrganizationRegisterInput struct {
 	Name     string `json:"name" validate:"required,max=512"`
-	Type     string `json:"type" validate:"required,max=256"`
 	Email    string `json:"email" validate:"required,max=256"`
 	Password string `json:"password" validate:"required,min=8,max=256"`
 }
