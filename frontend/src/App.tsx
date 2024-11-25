@@ -21,6 +21,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { SupplierSidebar } from './components/layout/SupplierSidebar';
 import { SupplierDashboard } from './pages/supplier/SupplierDashboard';
 import { SupplierProducts } from './pages/supplier/SupplierProducts';
+import { SupplierOrders } from './pages/supplier/SupplierOrders';
 
 const queryClient = new QueryClient();
 
@@ -93,6 +94,7 @@ function App() {
             {/* Supplier Dashboard Routes */}
             <Route path="/supplier/dashboard" element={<SupplierDashboardLayout><SupplierDashboard /></SupplierDashboardLayout>} />
             <Route path="/supplier/products" element={<SupplierDashboardLayout><SupplierProducts /></SupplierDashboardLayout>} />
+            <Route path="/supplier/orders" element={<SupplierDashboardLayout><SupplierOrders /></SupplierDashboardLayout>} />
           </Routes>
         </Router>
       </OrganizationContext.Provider>
