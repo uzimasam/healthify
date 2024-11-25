@@ -15,6 +15,8 @@ export function DashboardPage() {
     const [activeHospitals, setActiveHospitals] = useState(0);
     const [pendingApprovals, setPendingApprovals] = useState(0);
     const [lowStockAlerts, setLowStockAlerts] = useState(0);
+    // list of suppliers
+    const [suppliers, setSuppliers] = useState([]);
 
     useEffect(() => {
         async function fetchDashboardData() {
@@ -22,6 +24,7 @@ export function DashboardPage() {
             setActiveSuppliers(data.activeSuppliers);
             setActiveHospitals(data.activeHospitals);
             setPendingApprovals(data.pendingApprovals);
+            setSuppliers(data.suppliers);
         }
         fetchDashboardData();
     }, []);
@@ -99,7 +102,7 @@ export function DashboardPage() {
                     <TabsTrigger value="hospitals">Hospitals</TabsTrigger>
                 </TabsList>
                 <TabsContent value="suppliers" className="space-y-4">
-                    <SupplierList />
+                    <SupplierList suppliers={suppliers} />
                 </TabsContent>
                 <TabsContent value="hospitals" className="space-y-4">
                     <HospitalList />

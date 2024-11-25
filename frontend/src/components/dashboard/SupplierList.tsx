@@ -9,34 +9,21 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const suppliers = [
-  {
-    id: 1,
-    name: "MedTech Supplies",
-    status: "active",
-    reliability: 98,
-    hospitals: 45,
-    lastDelivery: "2024-03-15",
-  },
-  {
-    id: 2,
-    name: "Global Healthcare",
-    status: "active",
-    reliability: 95,
-    hospitals: 32,
-    lastDelivery: "2024-03-14",
-  },
-  {
-    id: 3,
-    name: "Prime Medical",
-    status: "pending",
-    reliability: 0,
-    hospitals: 0,
-    lastDelivery: "-",
-  },
-];
 
-export function SupplierList() {
+interface Supplier {
+  id: string;
+  name: string;
+  status: string;
+  reliability: number;
+  hospitals: number;
+  lastDelivery: string;
+}
+
+interface SupplierListProps {
+  suppliers: Supplier[];
+}
+
+export function SupplierList({ suppliers }: SupplierListProps) {
   return (
     <Table>
       <TableHeader>

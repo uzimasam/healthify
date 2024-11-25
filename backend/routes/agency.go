@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"healthify/backend/models"
 	"healthify/backend/storage"
 
 	"github.com/kataras/iris/v12"
@@ -10,6 +11,7 @@ const (
 	supplierCompliantCountQuery = "SELECT COUNT(*) FROM organizations WHERE type = 'supplier' AND compliance = true"
 	supplierNonCompliantCountQuery = "SELECT COUNT(*) FROM organizations WHERE type = 'supplier' AND compliance = false"
 	hospitalCountQuery = "SELECT COUNT(*) FROM organizations WHERE type = 'hospital'"
+	suppliersQuery = "SELECT * FROM organizations WHERE type = 'supplier'"
 )
 
 // GetAgencyDashboard returns the dashboard data for an agency
@@ -20,12 +22,18 @@ func GetAgencyDashboard(ctx iris.Context) {
 	supplierNonCompliantCount := getSupplierNonCompliantCount()
 	// count the number of organizations where the type is hospital
 	hospitalCount := getHospitalCount()
+	// get all the suppliers
+	suppliers := getSuppliers()
 	ctx.StopWithJSON(iris.StatusOK, iris.Map{
 		"message": "Agency dashboard",
 		"dashboard": iris.Map{
 			"supplierCompliantCount": supplierCompliantCount,
 			"supplierNonCompliantCount": supplierNonCompliantCount,
 			"hospitalCount": hospitalCount,
+		},
+		"suppliers": iris.Map{
+			"count": len(suppliers),
+			"list": suppliers,
 		},
 	})
 }
@@ -46,4 +54,10 @@ func getHospitalCount() int {
 	var hospitalCount int
 	storage.DB.Raw(hospitalCountQuery).Scan(&hospitalCount)
 	return hospitalCount
+}
+
+func getSuppliers() []models.OrganizationOutput {
+	var suppliers []models.OrganizationOutput
+	storage.DB.Raw(suppliersQuery).Scan(&suppliers)
+	return suppliers
 }

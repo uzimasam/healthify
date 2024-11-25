@@ -30,6 +30,9 @@ type OrganizationOutput struct {
 	Email string `json:"email"`
 	Phone string `json:"phone"`
 	Niche string `json:"niche"`
+	City  string `json:"city"`
+	Code  string `json:"code"`
+	Status string `json:"status"`
 }
 
 // OrganizationLoginInput is the input for logging in an organization
