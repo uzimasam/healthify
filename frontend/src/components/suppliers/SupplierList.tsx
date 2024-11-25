@@ -17,47 +17,23 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+interface Supplier {
+  id: number;
+  name: string;
+  type: string;
+  status: string;
+  location: string;
+  reliabilityScore: number;
+  lastDelivery: string;
+  complianceStatus: string;
+  activeContracts: number;
+}
 interface SupplierListProps {
   searchQuery: string;
+  suppliers: Supplier[];
 }
 
-const suppliers = [
-  {
-    id: 1,
-    name: "MedTech Supplies Inc.",
-    type: "Medical Equipment",
-    status: "active",
-    location: "Mombasa, MSA",
-    reliabilityScore: 98,
-    lastDelivery: "2024-03-15",
-    complianceStatus: "verified",
-    activeContracts: 12,
-  },
-  {
-    id: 2,
-    name: "Global Healthcare Solutions",
-    type: "Pharmaceuticals",
-    status: "active",
-    location: "Nakuru, NKR",
-    reliabilityScore: 95,
-    lastDelivery: "2024-03-14",
-    complianceStatus: "pending",
-    activeContracts: 8,
-  },
-  {
-    id: 3,
-    name: "Premier Medical Supplies",
-    type: "Medical Supplies",
-    status: "suspended",
-    location: "Nairobi, NBO",
-    reliabilityScore: 75,
-    lastDelivery: "2024-03-10",
-    complianceStatus: "warning",
-    activeContracts: 5,
-  },
-];
-
-export function SupplierList({ searchQuery }: SupplierListProps) {
+export function SupplierList({ searchQuery, suppliers }: SupplierListProps) {
   const filteredSuppliers = suppliers.filter((supplier) =>
     supplier.name.toLowerCase().includes(searchQuery.toLowerCase())
   );

@@ -32,7 +32,11 @@ type OrganizationOutput struct {
 	Niche string `json:"niche"`
 	City  string `json:"city"`
 	Code  string `json:"code"`
+	Compliance bool `json:"compliance"`
+	BusinessLicense bool `json:"business_license"`
+	Insurance bool `json:"insurance"`
 	Status string `json:"status"`
+	CreatedAt string `json:"created_at"`
 }
 
 // OrganizationLoginInput is the input for logging in an organization

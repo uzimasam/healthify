@@ -9,7 +9,9 @@ export async function useAgencyDashboardData() {
         activeSuppliers: res.dashboard.supplierCompliantCount,
         activeHospitals: res.dashboard.hospitalCount,
         pendingApprovals: res.dashboard.supplierNonCompliantCount,
-        suppliers: res.suppliers.list
+        suppliers: res.suppliers.list,
+        suppliersActive: res.suppliers.active,
+        suppliersPending: res.suppliers.pending,
     }
 
 }

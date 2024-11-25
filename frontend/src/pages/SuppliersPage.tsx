@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,9 +7,21 @@ import { SupplierList } from "@/components/suppliers/SupplierList";
 import { PendingApprovals } from "@/components/suppliers/PendingApprovals";
 import { SupplierAnalytics } from "@/components/suppliers/SupplierAnalytics";
 import { SupplierPerformance } from "@/components/suppliers/SupplierPerformance";
+import { useAgencyDashboardData } from "@/services/agency";
 
 export function SuppliersPage() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeSuppliers, setActiveSuppliers] = useState([]);
+  const [pendingApprovals, setPendingApprovals] = useState([]);
+
+  useEffect(() => {
+    async function fetchSuppliers() {
+      const data = await useAgencyDashboardData();
+      setActiveSuppliers(data.suppliersActive);
+      setPendingApprovals(data.suppliersPending);
+    }
+    fetchSuppliers();
+  }, []);
 
   return (
     <div className="flex-1 space-y-6 p-8 pt-6">
@@ -42,11 +54,11 @@ export function SuppliersPage() {
         </TabsList>
 
         <TabsContent value="active">
-          <SupplierList searchQuery={searchQuery} />
+          <SupplierList searchQuery={searchQuery} suppliers={activeSuppliers} />
         </TabsContent>
 
         <TabsContent value="pending">
-          <PendingApprovals />
+          <PendingApprovals pendingSuppliers={pendingApprovals} />
         </TabsContent>
 
         <TabsContent value="performance">

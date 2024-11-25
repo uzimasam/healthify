@@ -34,6 +34,8 @@ func GetAgencyDashboard(ctx iris.Context) {
 		"suppliers": iris.Map{
 			"count": len(suppliers),
 			"list": suppliers,
+			"active": activeSuppliers(suppliers),
+			"pending": pendingSuppliers(suppliers),
 		},
 	})
 }
@@ -60,4 +62,32 @@ func getSuppliers() []models.OrganizationOutput {
 	var suppliers []models.OrganizationOutput
 	storage.DB.Raw(suppliersQuery).Scan(&suppliers)
 	return suppliers
+}
+
+func activeSuppliers(suppliers []models.OrganizationOutput) []models.OrganizationOutput {
+    var activeSuppliers []models.OrganizationOutput
+    for _, supplier := range suppliers {
+        if supplier.Compliance {
+            activeSuppliers = append(activeSuppliers, supplier)
+        }
+    }
+	// if activeSuppliers is nil, return an empty slice instead
+	if activeSuppliers == nil {
+		return []models.OrganizationOutput{}
+	}
+	return activeSuppliers
+}
+
+func pendingSuppliers(suppliers []models.OrganizationOutput) []models.OrganizationOutput {
+	var pendingSuppliers []models.OrganizationOutput
+	for _, supplier := range suppliers {
+		if !supplier.Compliance {
+			pendingSuppliers = append(pendingSuppliers, supplier)
+		}
+	}
+	// if pendingSuppliers is nil, return an empty slice instead
+	if pendingSuppliers == nil {
+		return []models.OrganizationOutput{}
+	}
+	return pendingSuppliers
 }

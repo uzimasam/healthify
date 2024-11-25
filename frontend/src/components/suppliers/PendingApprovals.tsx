@@ -19,39 +19,24 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { format } from "date-fns";
 
-const pendingSuppliers = [
-  {
-    id: 1,
-    name: "NextGen Medical Supplies",
-    type: "Medical Equipment",
-    location: "Eldoret, ELD",
-    applicationDate: "2024-03-15",
-    documents: ["Business License", "Insurance"],
-    status: "pending_review",
-  },
-  {
-    id: 2,
-    name: "HealthCare Distributors LLC",
-    type: "Pharmaceuticals",
-    location: "Thika, THK",
-    applicationDate: "2024-03-14",
-    documents: ["Business License", "Insurance"],
-    status: "pending_documents",
-  },
-  {
-    id: 3,
-    name: "MedSupply Excellence",
-    type: "Medical Supplies",
-    location: "Mombasa, MSA",
-    applicationDate: "2024-03-13",
-    documents: ["Business License", "Insurance"],
-    status: "pending_verification",
-  },
-];
+interface Supplier {
+  id: number;
+  name: string;
+  type: string;
+  city: string;
+  code: string;
+  created_at: string;
+  status: string;
+}
 
-export function PendingApprovals() {
-  const [selectedSupplier, setSelectedSupplier] = useState<typeof pendingSuppliers[0] | null>(null);
+interface PendingApprovalsProps {
+  pendingSuppliers: Supplier[];
+}
+
+export function PendingApprovals({ pendingSuppliers }: PendingApprovalsProps) {
+  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
   const [showDialog, setShowDialog] = useState(false);
 
   const handleApprove = (supplier: typeof pendingSuppliers[0]) => {
@@ -83,8 +68,10 @@ export function PendingApprovals() {
                 <TableRow key={supplier.id}>
                   <TableCell className="font-medium">{supplier.name}</TableCell>
                   <TableCell>{supplier.type}</TableCell>
-                  <TableCell>{supplier.location}</TableCell>
-                  <TableCell>{supplier.applicationDate}</TableCell>
+                  <TableCell>{supplier.city} {supplier.code}</TableCell>
+                  <TableCell>
+                    {format(new Date(supplier.created_at), "do MMM yyyy h:mm a")}
+                  </TableCell>
                   <TableCell>
                     <Badge variant="secondary">
                       {supplier.status.replace("_", " ")}
@@ -92,11 +79,12 @@ export function PendingApprovals() {
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-col gap-1">
-                      {supplier.documents.map((doc) => (
-                        <span key={doc} className="text-sm">
-                          ✓ {doc}
-                        </span>
-                      ))}
+                      <span key="insurance" className="text-sm">
+                        ✓ Insurance
+                      </span>
+                      <span key="license" className="text-sm">
+                        ✓ Business License
+                      </span>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -132,18 +120,22 @@ export function PendingApprovals() {
                   <h4 className="font-medium">Company Details</h4>
                   <p className="text-sm">{selectedSupplier.name}</p>
                   <p className="text-sm">{selectedSupplier.type}</p>
-                  <p className="text-sm">{selectedSupplier.location}</p>
+                  <p className="text-sm">{selectedSupplier.city} {selectedSupplier.code}</p>
                 </div>
                 <div>
                   <h4 className="font-medium">Document Checklist</h4>
-                  {selectedSupplier.documents.map((doc) => (
-                    <div key={doc} className="flex items-center gap-2">
-                      <Checkbox id={doc} />
-                      <label htmlFor={doc} className="text-sm">
-                        {doc}
-                      </label>
-                    </div>
-                  ))}
+                  <div key="insurance" className="flex items-center gap-2">
+                    <Checkbox id="insurance" />
+                    <label htmlFor="insurance" className="text-sm">
+                      Insurance
+                    </label>
+                  </div>
+                  <div key="license" className="flex items-center gap-2">
+                    <Checkbox id="license" />
+                    <label htmlFor="license" className="text-sm">
+                      Business License
+                    </label>
+                  </div>
                 </div>
               </div>
             </div>
