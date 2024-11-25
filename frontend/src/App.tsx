@@ -23,6 +23,7 @@ import { SupplierDashboard } from './pages/supplier/SupplierDashboard';
 import { SupplierProducts } from './pages/supplier/SupplierProducts';
 import { SupplierOrders } from './pages/supplier/SupplierOrders';
 import { SupplierDeliveries } from './pages/supplier/SupplierDeliveries';
+import { SupplierPerformance } from './pages/supplier/SupplierPerformance';
 
 const queryClient = new QueryClient();
 
@@ -97,6 +98,7 @@ function App() {
             <Route path="/supplier/products" element={<SupplierDashboardLayout><SupplierProducts /></SupplierDashboardLayout>} />
             <Route path="/supplier/orders" element={<SupplierDashboardLayout><SupplierOrders /></SupplierDashboardLayout>} />
             <Route path="/supplier/deliveries" element={<SupplierDashboardLayout><SupplierDeliveries /></SupplierDashboardLayout>} />
+            <Route path='/supplier/performance' element={<SupplierDashboardLayout><SupplierPerformance /></SupplierDashboardLayout>} />
           </Routes>
         </Router>
       </OrganizationContext.Provider>
