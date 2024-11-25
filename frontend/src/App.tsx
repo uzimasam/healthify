@@ -20,6 +20,7 @@ import { OrganizationContext } from './context';
 import ProtectedRoute from './components/ProtectedRoute';
 import { SupplierSidebar } from './components/layout/SupplierSidebar';
 import { SupplierDashboard } from './pages/supplier/SupplierDashboard';
+import { SupplierProducts } from './pages/supplier/SupplierProducts';
 
 const queryClient = new QueryClient();
 
@@ -91,6 +92,7 @@ function App() {
 
             {/* Supplier Dashboard Routes */}
             <Route path="/supplier/dashboard" element={<SupplierDashboardLayout><SupplierDashboard /></SupplierDashboardLayout>} />
+            <Route path="/supplier/products" element={<SupplierDashboardLayout><SupplierProducts /></SupplierDashboardLayout>} />
           </Routes>
         </Router>
       </OrganizationContext.Provider>
