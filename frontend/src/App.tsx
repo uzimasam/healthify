@@ -32,6 +32,7 @@ import { SupplierSettings } from './pages/supplier/SupplierSettings';
 import { HospitalDashboard } from './pages/hospital/HospitalDashboard';
 import { HospitalSidebar } from './components/layout/HospitalSidebar';
 import { PlaceOrderPage } from './pages/hospital/PlaceOrderPage';
+import { ActiveOrdersPage } from './pages/hospital/ActiveOrdersPage';
 
 const queryClient = new QueryClient();
 
@@ -119,6 +120,7 @@ function App() {
             {/* Hospital Dashboard Routes */}
             <Route path="/hospital/dashboard" element={<HospitalDashboardLayout><HospitalDashboard /></HospitalDashboardLayout>} />
             <Route path='/hospital/place-order' element={<HospitalDashboardLayout><PlaceOrderPage /></HospitalDashboardLayout>} />
+            <Route path='/hospital/active-orders' element={<HospitalDashboardLayout><ActiveOrdersPage /></HospitalDashboardLayout>} />
 
             {/* Supplier Dashboard Routes */}
             <Route path="/supplier/dashboard" element={<SupplierDashboardLayout><SupplierDashboard /></SupplierDashboardLayout>} />
