@@ -34,6 +34,7 @@ import { HospitalSidebar } from './components/layout/HospitalSidebar';
 import { PlaceOrderPage } from './pages/hospital/PlaceOrderPage';
 import { ActiveOrdersPage } from './pages/hospital/ActiveOrdersPage';
 import { HospitalInventoryPage } from './pages/hospital/HospitalInventoryPage';
+import { OrderHistoryPage } from './pages/hospital/OrderHistoryPage';
 
 const queryClient = new QueryClient();
 
@@ -123,6 +124,7 @@ function App() {
             <Route path='/hospital/place-order' element={<HospitalDashboardLayout><PlaceOrderPage /></HospitalDashboardLayout>} />
             <Route path='/hospital/active-orders' element={<HospitalDashboardLayout><ActiveOrdersPage /></HospitalDashboardLayout>} />
             <Route path='/hospital/inventory' element={<HospitalDashboardLayout><HospitalInventoryPage /></HospitalDashboardLayout>} />
+            <Route path='/hospital/order-history' element={<HospitalDashboardLayout><OrderHistoryPage /></HospitalDashboardLayout>} />
 
             {/* Supplier Dashboard Routes */}
             <Route path="/supplier/dashboard" element={<SupplierDashboardLayout><SupplierDashboard /></SupplierDashboardLayout>} />
