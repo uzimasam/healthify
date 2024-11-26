@@ -29,6 +29,8 @@ import { SupplierHistory } from './pages/supplier/SupplierHistory';
 import { SupplierReports } from './pages/supplier/SupplierReports';
 import { SupplierNotifications } from './pages/supplier/SupplierNotifications';
 import { SupplierSettings } from './pages/supplier/SupplierSettings';
+import { HospitalDashboard } from './pages/hospital/HospitalDashboard';
+import { HospitalSidebar } from './components/layout/HospitalSidebar';
 
 const queryClient = new QueryClient();
 
@@ -38,6 +40,21 @@ function DashboardLayout({ children }: { readonly children: React.ReactNode }) {
     <div className="h-full relative">
       <div className="hidden h-full md:flex md:w-72 md:flex-col md:fixed md:inset-y-0 z-[80] bg-gray-900">
         <Sidebar />
+      </div>
+      <main className="md:pl-72">
+        <Header />
+        {children}
+      </main>
+    </div>
+  );
+}
+
+// Layout wrapper for hospital dashboard routes
+function HospitalDashboardLayout({ children }: { readonly children: React.ReactNode }) {
+  return (
+    <div className="h-full relative">
+      <div className="hidden h-full md:flex md:w-72 md:flex-col md:fixed md:inset-y-0 z-[80] bg-gray-900">
+        <HospitalSidebar />
       </div>
       <main className="md:pl-72">
         <Header />
@@ -97,6 +114,9 @@ function App() {
             <Route path="/dashboard/analytics" element={<ProtectedRoute><DashboardLayout><AnalyticsPage /></DashboardLayout></ProtectedRoute>} />
             <Route path='/dashboard/reports' element={<ProtectedRoute><DashboardLayout><ReportsPage /></DashboardLayout></ProtectedRoute>} />
             <Route path="/dashboard/settings" element={<ProtectedRoute><DashboardLayout><SettingsPage /></DashboardLayout></ProtectedRoute>} />
+
+            {/* Hospital Dashboard Routes */}
+            <Route path="/hospital/dashboard" element={<HospitalDashboardLayout><HospitalDashboard /></HospitalDashboardLayout>} />
 
             {/* Supplier Dashboard Routes */}
             <Route path="/supplier/dashboard" element={<SupplierDashboardLayout><SupplierDashboard /></SupplierDashboardLayout>} />
