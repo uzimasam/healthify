@@ -1,11 +1,36 @@
 # Healthify - Medical Supply Distribution System
 
-A comprehensive platform for managing medical supply distribution between hospitals, suppliers, and agencies. Built with React, TypeScript, and Tailwind CSS.
+A comprehensive platform for managing medical supply distribution between hospitals, suppliers, and agencies. Built with React and Go.
+
+## Repository Structure
+
+- `/frontend` - React TypeScript frontend application
+- `/backend` - Go REST API backend application
+
+## Tech Stack
+
+### Frontend
+- **Framework**: React 18 with TypeScript
+- **Routing**: React Router v6
+- **Styling**: Tailwind CSS
+- **UI Components**: shadcn/ui
+- **Charts**: Recharts
+- **Icons**: Lucide React
+
+### Backend
+- **Language**: Go
+- **Database**: PostgreSQL
+- **Architecture**: RESTful API
+- **Features**:
+  - JWT Authentication
+  - Role-based access control
+  - Real-time inventory tracking
+  - Order management system
+  - Analytics and reporting
 
 ## Features
 
 ### Hospital Portal
-
 - **Dashboard**: Real-time overview of inventory, orders, and alerts
 - **Inventory Management**: Track and manage medical supplies
 - **Order Management**: Place and track orders
@@ -13,91 +38,108 @@ A comprehensive platform for managing medical supply distribution between hospit
 - **Notifications**: Real-time alerts for stock levels and deliveries
 
 ### Supplier Portal
-
 - **Product Management**: Manage medical supply catalog
 - **Order Fulfillment**: Process and track orders
 - **Delivery Management**: Track and manage deliveries
 - **Performance Analytics**: Monitor KPIs and metrics
 
 ### Agency Dashboard
-
 - **Supply Chain Overview**: Monitor distribution network
 - **Hospital Management**: Track connected hospitals
 - **Supplier Management**: Manage supplier relationships
 - **Analytics**: Network-wide performance metrics
 
-## Tech Stack
-
-- **Frontend**: React 18 with TypeScript
-- **Routing**: React Router v6
-- **Styling**: Tailwind CSS
-- **UI Components**: shadcn/ui
-- **Charts**: Recharts
-- **Icons**: Lucide React
-
 ## Getting Started
 
-1. Clone the repository:
+### Prerequisites
+- Node.js 18+
+- Go 1.21+
+- PostgreSQL 14+
 
+### Frontend Setup
+
+1. Navigate to the frontend directory:
 ```bash
-git clone https://github.com/uzimasam/healthify.git
+cd frontend
 ```
 
 2. Install dependencies:
-
 ```bash
-cd healthify/frontend
 npm install
 ```
 
 3. Start the development server:
-
 ```bash
 npm run dev
 ```
 
 4. Open [http://localhost:5173](http://localhost:5173) in your browser
 
+### Backend Setup
+
+1. Navigate to the backend directory:
+```bash
+cd backend
+```
+
+2. Install Go dependencies:
+```bash
+go mod download
+```
+
+3. Set up environment variables:
+```bash
+cp .env.example .env
+# Edit .env with your database credentials
+```
+
+4. Run database migrations:
+```bash
+go run cmd/migrate/main.go
+```
+
+5. Start the server:
+```bash
+go run main.go
+```
+
+The API will be available at `http://localhost:8020`
+
 ## Project Structure
 
+### Frontend
 ```
-src/
-├── components/         # Reusable UI components
-│   ├── hospital/      # Hospital-specific components
-│   ├── supplier/      # Supplier-specific components
-│   ├── layout/        # Layout components
-│   └── ui/            # Base UI components
-├── pages/             # Page components
-│   ├── hospital/      # Hospital portal pages
-│   └── supplier/      # Supplier portal pages
-├── lib/              # Utility functions
-└── types/            # TypeScript type definitions
+frontend/
+├── src/
+│   ├── components/     # Reusable UI components
+│   │   ├── hospital/  # Hospital-specific components
+│   │   ├── supplier/  # Supplier-specific components
+│   │   ├── layout/    # Layout components
+│   │   └── ui/        # Base UI components
+│   ├── pages/         # Page components
+│   ├── lib/           # Utility functions
+│   └── types/         # TypeScript type definitions
 ```
 
-## Key Features
+### Backend
+```
+backend/
+├── db/migrations/     # Database migrations
+├── models/            # Database models
+├── routes/            # API routes
+├── storage/           # File storage
+├── utils/             # Utility functions
+```
 
-### For Hospitals
+## API Documentation
 
-- Real-time inventory tracking
-- Automated reordering system
-- Order tracking and management
+The API documentation is available at `/api/docs` when running the backend server. It includes:
+- Authentication endpoints
+- Hospital management
+- Supplier management
+- Order processing
+- Inventory tracking
 - Analytics and reporting
-- Supplier performance monitoring
-
-### For Suppliers
-
-- Order management
-- Delivery tracking
-- Performance analytics
-- Hospital relationship management
-- Inventory management
-
-### For Agencies
-
-- Network-wide monitoring
-- Supply chain optimization
-- Performance analytics
-- Hospital and supplier management
 
 ## Contributing
 
@@ -111,9 +153,15 @@ src/
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## Repository
+
+[https://github.com/uzimasam/healthify](https://github.com/uzimasam/healthify)
+
 ## Acknowledgments
 
 - [shadcn/ui](https://ui.shadcn.com/) for the beautiful UI components
 - [Tailwind CSS](https://tailwindcss.com/) for the utility-first CSS framework
 - [Recharts](https://recharts.org/) for the charting library
 - [Lucide](https://lucide.dev/) for the icons
+- [Go](https://golang.org/) for the backend runtime
+- [PostgreSQL](https://www.postgresql.org/) for the database
