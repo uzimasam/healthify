@@ -40,13 +40,13 @@ A comprehensive platform for managing medical supply distribution between hospit
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/healthify.git
+git clone https://github.com/uzimasam/healthify.git
 ```
 
 2. Install dependencies:
 
 ```bash
-cd healthify
+cd healthify/frontend
 npm install
 ```
 
