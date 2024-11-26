@@ -7,7 +7,6 @@ import { Card } from "@/components/ui/card";
 import { HospitalsList } from "@/components/supplier/hospitals/HospitalsList";
 import { HospitalRequests } from "@/components/supplier/hospitals/HospitalRequests";
 import { HospitalAnalytics } from "@/components/supplier/hospitals/HospitalAnalytics";
-import { HospitalMap } from "@/components/supplier/hospitals/HospitalMap";
 
 export function SupplierHospitals() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -80,7 +79,6 @@ export function SupplierHospitals() {
                 <TabsList>
                     <TabsTrigger value="all">All Hospitals</TabsTrigger>
                     <TabsTrigger value="requests">Partnership Requests</TabsTrigger>
-                    <TabsTrigger value="map">Hospital Map</TabsTrigger>
                     <TabsTrigger value="analytics">Analytics</TabsTrigger>
                 </TabsList>
 
@@ -90,10 +88,6 @@ export function SupplierHospitals() {
 
                 <TabsContent value="requests">
                     <HospitalRequests />
-                </TabsContent>
-
-                <TabsContent value="map">
-                    <HospitalMap />
                 </TabsContent>
 
                 <TabsContent value="analytics">
