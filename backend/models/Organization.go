@@ -14,8 +14,7 @@ type Organization struct {
 	Status    string `json:"status"`
 	Password  string `json:"password"`
 	CreatedAt string `json:"created_at"`
-	UpdateAt  string `json:"update_at"`
-	DeleteAt  string `json:"delete_at"`
+	UpdatedAt string `json:"updated_at"`
 }
 
 // OrganizationRegisterInput is the input for registering an organization
@@ -25,6 +24,8 @@ type OrganizationRegisterInput struct {
 	Email    string `json:"email" validate:"required,email"`
 	Phone    string `json:"phone" validate:"required,max=16"`
 	Niche    string `json:"niche" validate:"required,max=256"`
+	City     string `json:"city" validate:"required,max=256"`
+	Code     string `json:"code" validate:"required,max=16"`
 	Password string `json:"password" validate:"required,min=8"`
 }
 

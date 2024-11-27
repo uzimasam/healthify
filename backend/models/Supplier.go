@@ -9,6 +9,5 @@ type Supplier struct {
 	BusinessLicense bool   `json:"business_license"`
 	Insurance       bool   `json:"insurance"`
 	CreatedAt       string `json:"created_at"`
-	UpdateAt        string `json:"update_at"`
-	DeleteAt        string `json:"delete_at"`
+	UpdatedAt       string `json:"updated_at"`
 }

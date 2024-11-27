@@ -79,10 +79,10 @@ export function AddHospitalDialog({ open, onOpenChange }: AddHospitalDialogProps
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="state">State</Label>
+                <Label htmlFor="state">Code</Label>
                 <Input
-                  id="state"
-                  placeholder="Enter state"
+                  id="code"
+                  placeholder="Enter code"
                   required
                 />
               </div>

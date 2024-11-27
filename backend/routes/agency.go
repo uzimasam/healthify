@@ -3,16 +3,92 @@ package routes
 import (
 	"healthify/backend/models"
 	"healthify/backend/storage"
+	"healthify/backend/utils"
+	"strings"
 
 	"github.com/kataras/iris/v12"
 )
 
 const (
-	supplierCompliantCountQuery = "SELECT COUNT(*) FROM organizations WHERE type = 'supplier' AND compliance = true"
+	supplierCompliantCountQuery    = "SELECT COUNT(*) FROM organizations WHERE type = 'supplier' AND compliance = true"
 	supplierNonCompliantCountQuery = "SELECT COUNT(*) FROM organizations WHERE type = 'supplier' AND compliance = false"
-	hospitalCountQuery = "SELECT COUNT(*) FROM organizations WHERE type = 'hospital'"
-	suppliersQuery = "SELECT * FROM organizations WHERE type = 'supplier'"
+	hospitalCountQuery             = "SELECT COUNT(*) FROM organizations WHERE type = 'hospital'"
+	suppliersQuery                 = "SELECT * FROM organizations WHERE type = 'supplier'"
 )
+
+// AddHospital adds a hospital to the database
+func AddHospital(ctx iris.Context) {
+	var hospitalInput models.HospitalInput
+	err := ctx.ReadJSON(&hospitalInput)
+	if err != nil {
+		utils.HandleValidationError(err, ctx)
+		return
+	}
+
+	var newOrg models.Organization
+	orgExists, orgExistsErr := getAndHandleOrganizationExistsError(&newOrg, hospitalInput.Email)
+	if orgExistsErr != nil {
+		utils.CreateInternalError(ctx)
+		return
+	}
+
+	if orgExists {
+		utils.CreateError(iris.StatusConflict, "Organization already exists", "An organization with this email already exists", ctx)
+		return
+	}
+
+	hashedPassword, hashErr := hashAndSaltPassword(hospitalInput.Email)
+	if hashErr != nil {
+		utils.CreateInternalError(ctx)
+		return
+	}
+
+	newOrg = models.Organization{
+		Name:      hospitalInput.Name,
+		Type:      "hospital",
+		Phone:     hospitalInput.Phone,
+		Niche:     hospitalInput.Niche,
+		City:      hospitalInput.City,
+		Code:      hospitalInput.Code,
+		Email:     strings.ToLower(hospitalInput.Email),
+		Password:  hashedPassword,
+		Status:    "active",
+		CreatedAt: utils.GetFormattedTime(),
+		UpdatedAt: utils.GetFormattedTime(),
+	}
+
+	if err := storage.DB.Create(&newOrg).Error; err != nil {
+		utils.CreateInternalError(ctx)
+		return
+	}
+
+	var newOrgID uint
+	if err := storage.DB.Raw("SELECT id FROM organizations WHERE email = ?", newOrg.Email).Scan(&newOrgID).Error; err != nil {
+		utils.CreateInternalError(ctx)
+		return
+	}
+	// create a new hospital
+	newHospital := models.Hospital{
+		OrgID:     newOrgID,
+		CreatedAt: utils.GetFormattedTime(),
+		UpdatedAt: utils.GetFormattedTime(),
+	}
+
+	if err := storage.DB.Create(&newHospital).Error; err != nil {
+		utils.CreateInternalError(ctx)
+		return
+	}
+
+	ctx.StopWithJSON(iris.StatusCreated, iris.Map{
+		"message": "Hospital created",
+		"hospital": iris.Map{
+			"id":    newOrg.ID,
+			"name":  newOrg.Name,
+			"email": newOrg.Email,
+			"type":  newOrg.Type,
+		},
+	})
+}
 
 // GetAgencyDashboard returns the dashboard data for an agency
 func GetAgencyDashboard(ctx iris.Context) {
@@ -27,14 +103,14 @@ func GetAgencyDashboard(ctx iris.Context) {
 	ctx.StopWithJSON(iris.StatusOK, iris.Map{
 		"message": "Agency dashboard",
 		"dashboard": iris.Map{
-			"supplierCompliantCount": supplierCompliantCount,
+			"supplierCompliantCount":    supplierCompliantCount,
 			"supplierNonCompliantCount": supplierNonCompliantCount,
-			"hospitalCount": hospitalCount,
+			"hospitalCount":             hospitalCount,
 		},
 		"suppliers": iris.Map{
-			"count": len(suppliers),
-			"list": suppliers,
-			"active": activeSuppliers(suppliers),
+			"count":   len(suppliers),
+			"list":    suppliers,
+			"active":  activeSuppliers(suppliers),
 			"pending": pendingSuppliers(suppliers),
 		},
 	})
@@ -65,12 +141,12 @@ func getSuppliers() []models.OrganizationOutput {
 }
 
 func activeSuppliers(suppliers []models.OrganizationOutput) []models.OrganizationOutput {
-    var activeSuppliers []models.OrganizationOutput
-    for _, supplier := range suppliers {
-        if supplier.Compliance {
-            activeSuppliers = append(activeSuppliers, supplier)
-        }
-    }
+	var activeSuppliers []models.OrganizationOutput
+	for _, supplier := range suppliers {
+		if supplier.Compliance {
+			activeSuppliers = append(activeSuppliers, supplier)
+		}
+	}
 	// if activeSuppliers is nil, return an empty slice instead
 	if activeSuppliers == nil {
 		return []models.OrganizationOutput{}

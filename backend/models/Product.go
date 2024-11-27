@@ -16,6 +16,6 @@ type Product struct {
 	MinStock    int    `json:"min_stock"`
 	SupplierID  int    `json:"supplier_id"`
 	CreatedAt   string `json:"created_at"`
-	UpdateAt    string `json:"update_at"`
-	DeleteAt    string `json:"delete_at"`
+	UpdatedAt   string `json:"updated_at"`
+	DeletedAt   string `json:"deleted_at"`
 }

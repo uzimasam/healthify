@@ -15,6 +15,6 @@ type Inventory struct {
 	ExpiryDate         string  `json:"expiry_date"`
 	Status             string  `json:"status"`
 	CreatedAt          string  `json:"created_at"`
-	UpdateAt           string  `json:"update_at"`
-	DeleteAt           string  `json:"delete_at"`
+	UpdatedAt          string  `json:"updated_at"`
+	DeletedAt          string  `json:"deleted_at"`
 }

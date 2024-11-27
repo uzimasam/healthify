@@ -25,6 +25,7 @@ func main() {
 	agencyRoutes := app.Party("/api/agency")
 	{
 		agencyRoutes.Get("/dashboard", routes.GetAgencyDashboard)
+		agencyRoutes.Post("/add-hospital", routes.AddHospital)
 	}
 
 	app.Listen(":8020")

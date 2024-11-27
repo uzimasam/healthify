@@ -41,15 +41,42 @@ func Register(ctx iris.Context) {
 	}
 
 	newOrg = models.Organization{
-		Name:     orgInput.Name,
-		Type:     "supplier",
-		Phone:    orgInput.Phone,
-		Niche:    orgInput.Niche,
-		Email:    strings.ToLower(orgInput.Email),
-		Password: hashedPassword,
+		Name:      orgInput.Name,
+		Type:      "supplier",
+		Phone:     orgInput.Phone,
+		Niche:     orgInput.Niche,
+		Email:     strings.ToLower(orgInput.Email),
+		Password:  hashedPassword,
+		Status:    "active",
+		CreatedAt: utils.GetFormattedTime(),
+		UpdatedAt: utils.GetFormattedTime(),
 	}
 
-	storage.DB.Create(&newOrg)
+    if err := storage.DB.Create(&newOrg).Error; err != nil {
+		utils.CreateInternalError(ctx)
+		return
+	}
+
+	var newOrgID uint
+	if err := storage.DB.Raw("SELECT id FROM organizations WHERE email = ?", newOrg.Email).Scan(&newOrgID).Error; err != nil {
+		utils.CreateInternalError(ctx)
+		return
+	}
+
+	// create a new supplier
+	newSupplier := models.Supplier{
+		OrgID:     newOrgID,
+		Compliance: false,
+		BusinessLicense: false,
+		Insurance: false,
+		CreatedAt: utils.GetFormattedTime(),
+		UpdatedAt: utils.GetFormattedTime(),
+	}
+
+	if err := storage.DB.Create(&newSupplier).Error; err != nil {
+		utils.CreateInternalError(ctx)
+		return
+	}
 
 	ctx.StopWithJSON(iris.StatusCreated, iris.Map{
 		"message": "Organization created",
