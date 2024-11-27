@@ -26,6 +26,7 @@ func main() {
 	{
 		agencyRoutes.Get("/dashboard", routes.GetAgencyDashboard)
 		agencyRoutes.Post("/add-hospital", routes.AddHospital)
+		agencyRoutes.Get("/hospitals", routes.GetHospitals)
 	}
 
 	app.Listen(":8020")

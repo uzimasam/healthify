@@ -14,7 +14,18 @@ const (
 	supplierNonCompliantCountQuery = "SELECT COUNT(*) FROM organizations WHERE type = 'supplier' AND compliance = false"
 	hospitalCountQuery             = "SELECT COUNT(*) FROM organizations WHERE type = 'hospital'"
 	suppliersQuery                 = "SELECT * FROM organizations WHERE type = 'supplier'"
+	hospitalsQuery                 = "SELECT * FROM organizations WHERE type = 'hospital'"
 )
+
+// GetHospitals returns a list of hospitals
+func GetHospitals(ctx iris.Context) {
+	var hospitals []models.OrganizationOutput
+	storage.DB.Raw(hospitalsQuery).Scan(&hospitals)
+	ctx.StopWithJSON(iris.StatusOK, iris.Map{
+		"message":   "Hospitals",
+		"hospitals": hospitals,
+	})
+}
 
 // AddHospital adds a hospital to the database
 func AddHospital(ctx iris.Context) {
@@ -143,7 +154,10 @@ func getSuppliers() []models.OrganizationOutput {
 func activeSuppliers(suppliers []models.OrganizationOutput) []models.OrganizationOutput {
 	var activeSuppliers []models.OrganizationOutput
 	for _, supplier := range suppliers {
-		if supplier.Compliance {
+		// join the organizations and suppliers tables on the organization id
+		var supplierData models.Supplier
+		storage.DB.Raw("SELECT * FROM suppliers WHERE org_id = ?", supplier.ID).Scan(&supplierData)
+		if supplierData.Compliance {
 			activeSuppliers = append(activeSuppliers, supplier)
 		}
 	}
@@ -157,7 +171,10 @@ func activeSuppliers(suppliers []models.OrganizationOutput) []models.Organizatio
 func pendingSuppliers(suppliers []models.OrganizationOutput) []models.OrganizationOutput {
 	var pendingSuppliers []models.OrganizationOutput
 	for _, supplier := range suppliers {
-		if !supplier.Compliance {
+		// join the organizations and suppliers tables on the organization id
+		var supplierData models.Supplier
+		storage.DB.Raw("SELECT * FROM suppliers WHERE org_id = ?", supplier.ID).Scan(&supplierData)
+		if !supplierData.Compliance {
 			pendingSuppliers = append(pendingSuppliers, supplier)
 		}
 	}
