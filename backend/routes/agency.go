@@ -29,6 +29,16 @@ func GetHospitals(ctx iris.Context) {
 	})
 }
 
+// GetProductCategories returns a list of product categories
+func GetProductCategories(ctx iris.Context) {
+	var productCategories []models.ProductCategory
+	storage.DB.Find(&productCategories)
+	ctx.StopWithJSON(iris.StatusOK, iris.Map{
+		"message":           "Product categories",
+		"productCategories": productCategories,
+	})
+}
+
 // AddProductCategory adds a product category to the database
 func AddProductCategory(ctx iris.Context) {
 	var productCategoryInput models.ProductCategoryInput

@@ -28,6 +28,7 @@ func main() {
 		agencyRoutes.Post("/add-product_category", routes.AddProductCategory)
 		agencyRoutes.Get("/dashboard", routes.GetAgencyDashboard)
 		agencyRoutes.Get("/hospitals", routes.GetHospitals)
+		agencyRoutes.Get("/product_categories", routes.GetProductCategories)
 	}
 
 	app.Listen(":8020")
