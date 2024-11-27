@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/x/errors"
+	"gorm.io/gorm"
 )
 
 const (
@@ -25,6 +27,64 @@ func GetHospitals(ctx iris.Context) {
 		"message":   "Hospitals",
 		"hospitals": hospitals,
 	})
+}
+
+// AddProductCategory adds a product category to the database
+func AddProductCategory(ctx iris.Context) {
+	var productCategoryInput models.ProductCategoryInput
+	err := ctx.ReadJSON(&productCategoryInput)
+	if err != nil {
+		utils.HandleValidationError(err, ctx)
+		return
+	}
+
+	var newProductCategory models.ProductCategory
+	productCategoryExists, productCategoryExistsErr := getAndHandleProductCategoryExistsError(&newProductCategory, productCategoryInput.Name)
+	if productCategoryExistsErr != nil {
+		utils.CreateInternalError(ctx)
+		return
+	}
+
+	if productCategoryExists {
+		utils.CreateError(iris.StatusConflict, "Product category already exists", "A product category with this name already exists", ctx)
+		return
+	}
+
+	newProductCategory = models.ProductCategory{
+		Name:      productCategoryInput.Name,
+		CreatedAt: utils.GetFormattedTime(),
+		UpdatedAt: utils.GetFormattedTime(),
+	}
+
+	if err := storage.DB.Create(&newProductCategory).Error; err != nil {
+		utils.CreateInternalError(ctx)
+		return
+	}
+
+	ctx.StopWithJSON(iris.StatusCreated, iris.Map{
+		"message": "Product category created",
+		"productCategory": iris.Map{
+			"id":   newProductCategory.ID,
+			"name": newProductCategory.Name,
+		},
+	})
+}
+
+func getAndHandleProductCategoryExistsError(newProductCategory *models.ProductCategory, name string) (exists bool, err error) {
+	productCategoryExistsQuery := storage.DB.Where("name = ?", name).First(newProductCategory)
+	if productCategoryExistsQuery.Error != nil {
+		if errors.Is(productCategoryExistsQuery.Error, gorm.ErrRecordNotFound) {
+			return false, nil
+		}
+		return false, productCategoryExistsQuery.Error
+	}
+
+	productCategoryExists := productCategoryExistsQuery.RowsAffected > 0
+	if productCategoryExists {
+		return true, nil
+	}
+
+	return false, nil
 }
 
 // AddHospital adds a hospital to the database

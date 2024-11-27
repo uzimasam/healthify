@@ -7,5 +7,8 @@ type ProductCategory struct {
 	Name      string `json:"name"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
-	DeletedAt string `json:"deleted_at"`
+}
+
+type ProductCategoryInput struct {
+	Name string `json:"name" validate:"required"`
 }
