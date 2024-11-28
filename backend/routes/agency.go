@@ -19,6 +19,16 @@ const (
 	hospitalsQuery                 = "SELECT * FROM organizations WHERE type = 'hospital'"
 )
 
+// GetSuppliers returns a list of suppliers
+func GetSuppliers(ctx iris.Context) {
+	var suppliers []models.OrganizationOutput
+	storage.DB.Raw(suppliersQuery).Scan(&suppliers)
+	ctx.StopWithJSON(iris.StatusOK, iris.Map{
+		"message":   "Suppliers",
+		"suppliers": suppliers,
+	})
+}
+
 // GetHospitals returns a list of hospitals
 func GetHospitals(ctx iris.Context) {
 	var hospitals []models.OrganizationOutput

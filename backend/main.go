@@ -29,6 +29,7 @@ func main() {
 		agencyRoutes.Get("/dashboard", routes.GetAgencyDashboard)
 		agencyRoutes.Get("/hospitals", routes.GetHospitals)
 		agencyRoutes.Get("/product_categories", routes.GetProductCategories)
+		agencyRoutes.Get("/suppliers", routes.GetSuppliers)
 	}
 
 	hospitalRoutes := app.Party("/api/hospital")
