@@ -31,5 +31,10 @@ func main() {
 		agencyRoutes.Get("/product_categories", routes.GetProductCategories)
 	}
 
+	supplierRoutes := app.Party("/api/supplier")
+	{
+		supplierRoutes.Post("/add-product", routes.AddProduct)
+	}
+
 	app.Listen(":8020")
 }
