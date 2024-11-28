@@ -41,6 +41,7 @@ func main() {
 	supplierRoutes := app.Party("/api/supplier")
 	{
 		supplierRoutes.Post("/add-product", routes.AddProduct)
+		supplierRoutes.Get("/products", routes.GetProducts)
 	}
 
 	app.Listen(":8020")

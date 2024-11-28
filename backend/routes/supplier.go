@@ -9,6 +9,16 @@ import (
 	"gorm.io/gorm"
 )
 
+// GetProducts returns a list of products
+func GetProducts(ctx iris.Context) {
+	var products []models.Product
+	storage.DB.Find(&products)
+	ctx.StopWithJSON(iris.StatusOK, iris.Map{
+		"message":  "Products",
+		"products": products,
+	})
+}
+
 // AddProduct adds a product to the database
 func AddProduct(ctx iris.Context) {
 	var productInput models.ProductInput

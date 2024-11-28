@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,23 +10,45 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Plus, X } from "lucide-react";
+import { fetchProducts, Product } from "@/lib/api/products";
 
 interface OrderItem {
     id: string;
-    product: string;
+    productId: string;
     quantity: number;
     unit: string;
 }
 
 export function ProductSelector() {
     const [items, setItems] = useState<OrderItem[]>([
-        { id: "1", product: "", quantity: 0, unit: "" },
+        { id: "1", productId: "", quantity: 0, unit: "" },
     ]);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        async function loadProducts() {
+            try {
+                setIsLoading(true);
+                const data = await fetchProducts();
+                setProducts(data);
+                setError(null);
+            } catch (err) {
+                setError('Failed to load products. Please try again later.');
+                console.error('Error loading products:', err);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        loadProducts();
+    }, []);
 
     const addItem = () => {
         setItems([
             ...items,
-            { id: Math.random().toString(), product: "", quantity: 0, unit: "" },
+            { id: Math.random().toString(), productId: "", quantity: 0, unit: "" },
         ]);
     };
 
@@ -35,6 +57,35 @@ export function ProductSelector() {
             setItems(items.filter((item) => item.id !== id));
         }
     };
+
+    const updateItem = (id: string, field: keyof OrderItem, value: string | number) => {
+        setItems(items.map(item => {
+            if (item.id === id) {
+                if (field === 'productId' && typeof value === 'string') {
+                    const product = products.find(p => p.ID.toString() === value);
+                    return {
+                        ...item,
+                        [field]: value,
+                        unit: product?.unit || ''
+                    };
+                }
+                return { ...item, [field]: value };
+            }
+            return item;
+        }));
+    };
+
+    if (error) {
+        return (
+            <Card>
+                <CardContent className="p-6">
+                    <div className="text-red-500 text-center">
+                        {error}
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
 
     return (
         <Card>
@@ -49,15 +100,29 @@ export function ProductSelector() {
                 {items.map((item) => (
                     <div key={item.id} className="flex items-center gap-4">
                         <div className="flex-1">
-                            <Select>
+                            <Select
+                                value={item.productId}
+                                onValueChange={(value) => updateItem(item.id, 'productId', value)}
+                            >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select product" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="masks">Surgical Masks</SelectItem>
-                                    <SelectItem value="gloves">Surgical Gloves</SelectItem>
-                                    <SelectItem value="syringes">Syringes</SelectItem>
-                                    <SelectItem value="bandages">Bandages</SelectItem>
+                                    {isLoading ? (
+                                        <SelectItem value="loading" disabled>
+                                            Loading products...
+                                        </SelectItem>
+                                    ) : products.length === 0 ? (
+                                        <SelectItem value="none" disabled>
+                                            No products available
+                                        </SelectItem>
+                                    ) : (
+                                        products.map((product) => (
+                                            <SelectItem key={product.ID} value={product.ID.toString()}>
+                                                {product.name} (${product.price})
+                                            </SelectItem>
+                                        ))
+                                    )}
                                 </SelectContent>
                             </Select>
                         </div>
@@ -66,17 +131,16 @@ export function ProductSelector() {
                             placeholder="Qty"
                             className="w-24"
                             min="1"
+                            value={item.quantity || ''}
+                            onChange={(e) => updateItem(item.id, 'quantity', parseInt(e.target.value) || 0)}
                         />
-                        <Select>
-                            <SelectTrigger className="w-28">
-                                <SelectValue placeholder="Unit" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="pieces">Pieces</SelectItem>
-                                <SelectItem value="boxes">Boxes</SelectItem>
-                                <SelectItem value="packs">Packs</SelectItem>
-                            </SelectContent>
-                        </Select>
+                        <div className="w-28">
+                            <Input
+                                value={item.unit}
+                                disabled
+                                placeholder="Unit"
+                            />
+                        </div>
                         <Button
                             variant="ghost"
                             size="icon"
