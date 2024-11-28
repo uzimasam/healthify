@@ -50,3 +50,50 @@ type OrderInput struct {
 		Unit      string `json:"unit" validate:"required"`
 	} `json:"products" validate:"required"`
 }
+
+/*
+	Order Response structure
+	const activeOrders = [
+    {
+        id: "ORD-2024-001",
+        items: [
+            { name: "Surgical Masks", quantity: 5000, unit: "pieces" },
+            { name: "Surgical Gloves", quantity: 2000, unit: "pieces" },
+        ],
+        supplier: "MedTech Supplies Inc.",
+        orderDate: "2024-03-15",
+        expectedDelivery: "2024-03-18",
+        status: "processing",
+        priority: "high",
+    },
+    {
+        id: "ORD-2024-002",
+        items: [
+            { name: "Syringes", quantity: 10000, unit: "pieces" },
+            { name: "Bandages", quantity: 5000, unit: "pieces" },
+        ],
+        supplier: "Global Healthcare Solutions",
+        orderDate: "2024-03-14",
+        expectedDelivery: "2024-03-17",
+        status: "confirmed",
+        priority: "normal",
+    },
+];
+*/
+
+type OrderResponse struct {
+	ID              string       `json:"id"`
+	Items           []OrderItem  `json:"items"`
+	Supplier        string       `json:"supplier"`
+	OrderDate       string       `json:"order_date"`
+	ExpectedDelivery string       `json:"expected_delivery"`
+	Status          string       `json:"status"`
+	Priority        string       `json:"priority"`
+	Total           float64      `json:"total"`
+}
+
+type OrderItem struct {
+	Name     string `json:"name"`
+	Quantity int    `json:"quantity"`
+	Unit     string `json:"unit"`
+}

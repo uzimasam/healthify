@@ -34,6 +34,7 @@ func main() {
 	hospitalRoutes := app.Party("/api/hospital")
 	{
 		hospitalRoutes.Post("/add-order", routes.AddOrder)
+		hospitalRoutes.Get("/orders", routes.GetOrders)
 	}
 
 	supplierRoutes := app.Party("/api/supplier")

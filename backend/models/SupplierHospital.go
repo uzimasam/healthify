@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"healthify/backend/storage"
+
+	"gorm.io/gorm"
+)
 
 type SupplierHospital struct {
 	gorm.Model
@@ -14,4 +18,16 @@ type SupplierHospital struct {
 	Status             string `json:"status"`
 	CreatedAt          string `json:"created_at"`
 	UpdatedAt          string `json:"updated_at"`
+}
+
+func GetSupplier (id string) Supplier {
+	var supplier Supplier
+	storage.DB.Where("id = ?", id).First(&supplier)
+	return supplier
+}
+
+func GetHospital (id string) Hospital {
+	var hospital Hospital
+	storage.DB.Where("id = ?", id).First(&hospital)
+	return hospital
 }

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -8,35 +9,72 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { fetchActiveOrders } from "@/lib/api/orders";
+import { AlertCircle } from "lucide-react";
 
-const activeOrders = [
-    {
-        id: "ORD-2024-001",
-        items: [
-            { name: "Surgical Masks", quantity: 5000, unit: "pieces" },
-            { name: "Surgical Gloves", quantity: 2000, unit: "pieces" },
-        ],
-        supplier: "MedTech Supplies Inc.",
-        orderDate: "2024-03-15",
-        expectedDelivery: "2024-03-18",
-        status: "processing",
-        priority: "high",
-    },
-    {
-        id: "ORD-2024-002",
-        items: [
-            { name: "Syringes", quantity: 10000, unit: "pieces" },
-            { name: "Bandages", quantity: 5000, unit: "pieces" },
-        ],
-        supplier: "Global Healthcare Solutions",
-        orderDate: "2024-03-14",
-        expectedDelivery: "2024-03-17",
-        status: "confirmed",
-        priority: "normal",
-    },
-];
+interface OrderItem {
+    name: string;
+    quantity: number;
+    unit: string;
+}
+
+interface ActiveOrder {
+    id: string;
+    items: OrderItem[];
+    supplier: string;
+    orderDate: string;
+    expectedDelivery: string;
+    status: string;
+    priority: string;
+}
 
 export function HospitalActiveOrders() {
+    const [activeOrders, setActiveOrders] = useState<ActiveOrder[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        async function loadActiveOrders() {
+            try {
+                setIsLoading(true);
+                const data = await fetchActiveOrders();
+                setActiveOrders(data);
+                setError(null);
+            } catch (err) {
+                setError('Failed to load active orders. Please try again later.');
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        loadActiveOrders();
+    }, []);
+
+    if (isLoading) {
+        return (
+            <Card>
+                <CardContent className="p-6">
+                    <div className="flex items-center justify-center">
+                        <span className="text-gray-500">Loading active orders...</span>
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    if (error) {
+        return (
+            <Card>
+                <CardContent className="p-6">
+                    <div className="flex items-center gap-2 text-red-500">
+                        <AlertCircle className="h-5 w-5" />
+                        <span>{error}</span>
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
+
     return (
         <Card>
             <CardHeader>
@@ -91,6 +129,13 @@ export function HospitalActiveOrders() {
                                 </TableCell>
                             </TableRow>
                         ))}
+                        {activeOrders.length === 0 && (
+                            <TableRow>
+                                <TableCell colSpan={7} className="text-center text-gray-500">
+                                    No active orders found
+                                </TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </CardContent>

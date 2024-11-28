@@ -6,6 +6,7 @@ import (
 	"healthify/backend/storage"
 	"healthify/backend/utils"
 	"log"
+	"time"
 
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/x/errors"
@@ -17,9 +18,82 @@ const (
 	invalidProduct            = "Invalid product"
 )
 
+// GetOrders is a function that gets all orders from the database.
+func GetOrders(ctx iris.Context) {
+	var orders []models.Order
+	storage.DB.Find(&orders)
+
+	var activeOrders []models.OrderResponse
+	for _, order := range orders {
+		var orderProducts []models.OrderProduct
+		storage.DB.Where("order_id = ?", order.ID).Find(&orderProducts)
+
+		var total float64
+		var items []models.OrderItem
+		for _, orderProduct := range orderProducts {
+			var product models.Product
+			storage.DB.Where("id = ?", orderProduct.ProductID).First(&product)
+
+			total += orderProduct.TotalPrice
+			item := models.OrderItem{
+				Name:     product.Name,
+				Quantity: orderProduct.Quantity,
+				Unit:     orderProduct.Unit,
+			}
+			items = append(items, item)
+		}
+
+		var supplierHospital models.SupplierHospital
+		storage.DB.Where("id = ?", order.SupplierHospitalID).First(&supplierHospital)
+		var supplier models.Supplier
+		storage.DB.Where("id = ?", supplierHospital.SupplierID).First(&supplier)
+		var supplierOrganization models.Organization
+		storage.DB.Where("id = ?", supplier.OrgID).First(&supplierOrganization)
+
+		if order.Priority == "1" {
+			order.Priority = "high"
+		}
+		if order.Priority == "2" {
+			order.Priority = "normal"
+		}
+		if order.Priority == "3" {
+			order.Priority = "low"
+		}
+
+		// format dates to sth like "2024-03-15 10:00 AM"
+		createdAtTime, err := time.Parse(time.RFC3339, order.CreatedAt)
+		if err != nil {
+			log.Println("Error parsing CreatedAt:", err)
+			ctx.StopWithJSON(iris.StatusInternalServerError, iris.Map{"error": "Internal server error"})
+			return
+		}
+		order.CreatedAt = utils.FormatDate(createdAtTime)
+		requiredByTime, err := time.Parse(time.RFC3339, order.RequiredBy)
+		if err != nil {
+			log.Println("Error parsing RequiredBy:", err)
+			ctx.StopWithJSON(iris.StatusInternalServerError, iris.Map{"error": "Internal server error"})
+			return
+		}
+		order.RequiredBy = utils.FormatDate(requiredByTime)
+
+		activeOrder := models.OrderResponse{
+			ID:              order.OrderNumber,
+			Items:           items,
+			Supplier:        supplierOrganization.Name,
+			OrderDate:       order.CreatedAt,
+			ExpectedDelivery: order.RequiredBy,
+			Status:          order.Status,
+			Priority:        order.Priority,
+			Total:           total,
+		}
+		activeOrders = append(activeOrders, activeOrder)
+	}
+
+	ctx.StopWithJSON(iris.StatusOK, activeOrders)
+}
+
 // AddOrder is a function that adds an order to the database.
 func AddOrder(ctx iris.Context) {
-	log.Println("AddOrder")
 	var orderInput models.OrderInput
 	err := ctx.ReadJSON(&orderInput)
 	if err != nil {
