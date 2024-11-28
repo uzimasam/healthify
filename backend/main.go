@@ -31,6 +31,11 @@ func main() {
 		agencyRoutes.Get("/product_categories", routes.GetProductCategories)
 	}
 
+	hospitalRoutes := app.Party("/api/hospital")
+	{
+		hospitalRoutes.Post("/add-order", routes.AddOrder)
+	}
+
 	supplierRoutes := app.Party("/api/supplier")
 	{
 		supplierRoutes.Post("/add-product", routes.AddProduct)

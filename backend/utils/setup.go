@@ -15,3 +15,16 @@ func GenerateRandomNumber() string {
 	number := rand.Intn(9000) + 1000
 	return fmt.Sprintf("%04d", number)
 }
+
+func Contains(slice []string, item string) bool {
+	for _, s := range slice {
+		if s == item {
+			return true
+		}
+	}
+	return false
+}
+
+func Join(slice []string, sep string) string {
+	return fmt.Sprintf("%s", slice)
+}
