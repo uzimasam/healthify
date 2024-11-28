@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,9 +8,40 @@ import { OrdersList } from "@/components/supplier/orders/OrdersList";
 import { PendingOrders } from "@/components/supplier/orders/PendingOrders";
 import { OrderFulfillment } from "@/components/supplier/orders/OrderFulfillment";
 import { OrderAnalytics } from "@/components/supplier/orders/OrderAnalytics";
+import { fetchOrders } from "@/lib/api/orders";
 
 export function SupplierOrders() {
     const [searchQuery, setSearchQuery] = useState("");
+    const [orders, setOrders] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        async function loadOrders() {
+            try {
+                setIsLoading(true);
+                const data = await fetchOrders();
+                setOrders(data);
+                setError(null);
+            } catch (err) {
+                setError('Failed to load orders. Please try again later.');
+                console.error('Error loading orders:', err);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        loadOrders();
+    }, []);
+
+    // Calculate statistics from orders
+    const pendingOrders = orders.filter(order => order.status === "pending").length;
+    const processingOrders = orders.filter(order => order.status === "processing").length;
+    const fulfilledToday = orders.filter(order => {
+        const today = new Date().toISOString().split('T')[0];
+        return order.order_date === today && order.status === "completed";
+    }).length;
+    const totalOrders = orders.length;
 
     return (
         <div className="flex-1 space-y-6 p-8 pt-6">
@@ -25,7 +56,7 @@ export function SupplierOrders() {
                         <span className="text-sm font-medium">Pending Orders</span>
                     </div>
                     <div className="mt-4">
-                        <span className="text-3xl font-bold">12</span>
+                        <span className="text-3xl font-bold">{pendingOrders}</span>
                     </div>
                 </Card>
 
@@ -35,7 +66,7 @@ export function SupplierOrders() {
                         <span className="text-sm font-medium">Processing</span>
                     </div>
                     <div className="mt-4">
-                        <span className="text-3xl font-bold">8</span>
+                        <span className="text-3xl font-bold">{processingOrders}</span>
                     </div>
                 </Card>
 
@@ -45,7 +76,7 @@ export function SupplierOrders() {
                         <span className="text-sm font-medium">Fulfilled Today</span>
                     </div>
                     <div className="mt-4">
-                        <span className="text-3xl font-bold">15</span>
+                        <span className="text-3xl font-bold">{fulfilledToday}</span>
                     </div>
                 </Card>
 
@@ -55,7 +86,7 @@ export function SupplierOrders() {
                         <span className="text-sm font-medium">Total Orders</span>
                     </div>
                     <div className="mt-4">
-                        <span className="text-3xl font-bold">156</span>
+                        <span className="text-3xl font-bold">{totalOrders}</span>
                     </div>
                 </Card>
             </div>
@@ -76,30 +107,43 @@ export function SupplierOrders() {
                 </Button>
             </div>
 
-            <Tabs defaultValue="all" className="space-y-4">
-                <TabsList>
-                    <TabsTrigger value="all">All Orders</TabsTrigger>
-                    <TabsTrigger value="pending">Pending</TabsTrigger>
-                    <TabsTrigger value="fulfillment">Fulfillment</TabsTrigger>
-                    <TabsTrigger value="analytics">Analytics</TabsTrigger>
-                </TabsList>
+            {error ? (
+                <div className="text-center p-8 text-red-500">
+                    {error}
+                    <Button
+                        variant="outline"
+                        className="ml-4"
+                        onClick={() => window.location.reload()}
+                    >
+                        Retry
+                    </Button>
+                </div>
+            ) : (
+                <Tabs defaultValue="all" className="space-y-4">
+                    <TabsList>
+                        <TabsTrigger value="all">All Orders</TabsTrigger>
+                        <TabsTrigger value="pending">Pending</TabsTrigger>
+                        <TabsTrigger value="fulfillment">Fulfillment</TabsTrigger>
+                        <TabsTrigger value="analytics">Analytics</TabsTrigger>
+                    </TabsList>
 
-                <TabsContent value="all">
-                    <OrdersList searchQuery={searchQuery} />
-                </TabsContent>
+                    <TabsContent value="all">
+                        <OrdersList searchQuery={searchQuery} />
+                    </TabsContent>
 
-                <TabsContent value="pending">
-                    <PendingOrders />
-                </TabsContent>
+                    <TabsContent value="pending">
+                        <PendingOrders />
+                    </TabsContent>
 
-                <TabsContent value="fulfillment">
-                    <OrderFulfillment />
-                </TabsContent>
+                    <TabsContent value="fulfillment">
+                        <OrderFulfillment />
+                    </TabsContent>
 
-                <TabsContent value="analytics">
-                    <OrderAnalytics />
-                </TabsContent>
-            </Tabs>
+                    <TabsContent value="analytics">
+                        <OrderAnalytics />
+                    </TabsContent>
+                </Tabs>
+            )}
         </div>
     );
 }
