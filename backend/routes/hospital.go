@@ -49,6 +49,10 @@ func GetOrders(ctx iris.Context) {
 		storage.DB.Where("id = ?", supplierHospital.SupplierID).First(&supplier)
 		var supplierOrganization models.Organization
 		storage.DB.Where("id = ?", supplier.OrgID).First(&supplierOrganization)
+		var hospital models.Hospital
+		storage.DB.Where("id = ?", supplierHospital.HospitalID).First(&hospital)
+		var hospitalOrganization models.Organization
+		storage.DB.Where("id = ?", hospital.OrgID).First(&hospitalOrganization)
 
 		if order.Priority == "1" {
 			order.Priority = "high"
@@ -80,6 +84,7 @@ func GetOrders(ctx iris.Context) {
 			ID:              order.OrderNumber,
 			Items:           items,
 			Supplier:        supplierOrganization.Name,
+			Hospital:        hospitalOrganization.Name,
 			OrderDate:       order.CreatedAt,
 			ExpectedDelivery: order.RequiredBy,
 			Status:          order.Status,

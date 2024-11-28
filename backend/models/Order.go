@@ -85,6 +85,7 @@ type OrderResponse struct {
 	ID              string       `json:"id"`
 	Items           []OrderItem  `json:"items"`
 	Supplier        string       `json:"supplier"`
+	Hospital        string       `json:"hospital"`
 	OrderDate       string       `json:"order_date"`
 	ExpectedDelivery string       `json:"expected_delivery"`
 	Status          string       `json:"status"`

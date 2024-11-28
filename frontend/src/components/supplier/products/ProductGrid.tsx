@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,36 +9,36 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { fetchProducts, Product } from "@/lib/api/products";
 
 interface ProductGridProps {
     searchQuery: string;
     sortBy: string;
 }
 
-const products = [
-    {
-        id: "P001",
-        name: "Surgical Masks",
-        image: "https://images.unsplash.com/photo-1584634731339-252c581abfc5",
-        category: "PPE",
-        price: 0.5,
-        stock: 5000,
-        minStock: 1000,
-        status: "active",
-    },
-    {
-        id: "P002",
-        name: "Surgical Gloves",
-        image: "https://images.unsplash.com/photo-1583947215259-38e31be8751f",
-        category: "PPE",
-        price: 0.75,
-        stock: 800,
-        minStock: 1000,
-        status: "low_stock",
-    },
-];
-
 export function ProductGrid({ searchQuery, sortBy }: ProductGridProps) {
+    const [products, setProducts] = useState<Product[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        async function loadProducts() {
+            try {
+                setIsLoading(true);
+                const data = await fetchProducts();
+                setProducts(data);
+                setError(null);
+            } catch (err) {
+                setError('Failed to load products. Please try again later.');
+                console.error('Error loading products:', err);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        loadProducts();
+    }, []);
+
     const filteredProducts = products
         .filter((product) =>
             product.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -51,23 +52,54 @@ export function ProductGrid({ searchQuery, sortBy }: ProductGridProps) {
                 case "price":
                     return b.price - a.price;
                 case "category":
-                    return a.category.localeCompare(b.category);
+                    return a.category_id - b.category_id;
                 default:
                     return 0;
             }
         });
 
+    if (isLoading) {
+        return (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {[...Array(6)].map((_, i) => (
+                    <Card key={i} className="overflow-hidden">
+                        <div className="relative aspect-square bg-gray-100 animate-pulse" />
+                        <div className="p-4 space-y-4">
+                            <div className="h-4 bg-gray-100 rounded animate-pulse" />
+                            <div className="h-4 bg-gray-100 rounded w-1/2 animate-pulse" />
+                        </div>
+                    </Card>
+                ))}
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="text-center p-8 text-red-500">
+                <p>{error}</p>
+                <Button
+                    variant="outline"
+                    className="mt-4"
+                    onClick={() => window.location.reload()}
+                >
+                    Try Again
+                </Button>
+            </div>
+        );
+    }
+
     return (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredProducts.map((product) => (
-                <Card key={product.id} className="overflow-hidden">
+                <Card key={product.ID} className="overflow-hidden">
                     <div className="relative aspect-square">
                         <img
-                            src={product.image}
+                            src={product.image_url}
                             alt={product.name}
                             className="object-cover w-full h-full"
                         />
-                        {product.status === "low_stock" && (
+                        {product.stock <= product.min_stock && (
                             <Badge
                                 variant="destructive"
                                 className="absolute top-2 right-2"
@@ -99,16 +131,20 @@ export function ProductGrid({ searchQuery, sortBy }: ProductGridProps) {
                         </div>
                         <div className="space-y-1 text-sm">
                             <div className="flex justify-between">
-                                <span className="text-gray-500">Category:</span>
-                                <span>{product.category}</span>
+                                <span className="text-gray-500">SKU:</span>
+                                <span>{product.sku}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-500">Price:</span>
-                                <span>${product.price}</span>
+                                <span>${product.price.toLocaleString()}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-500">Stock:</span>
-                                <span>{product.stock}</span>
+                                <span>{product.stock} {product.unit}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-gray-500">Min Stock:</span>
+                                <span>{product.min_stock} {product.unit}</span>
                             </div>
                         </div>
                         <div className="mt-4">
@@ -117,6 +153,13 @@ export function ProductGrid({ searchQuery, sortBy }: ProductGridProps) {
                     </div>
                 </Card>
             ))}
+            {filteredProducts.length === 0 && (
+                <div className="col-span-full text-center py-8 text-gray-500">
+                    {searchQuery
+                        ? "No products found matching your search"
+                        : "No products available"}
+                </div>
+            )}
         </div>
     );
 }
