@@ -14,6 +14,8 @@ import { ProductSelector } from "@/components/hospital/orders/ProductSelector";
 import { OrderSummary } from "@/components/hospital/orders/OrderSummary";
 import { ShoppingCart, Plus } from "lucide-react";
 import { fetchSuppliers } from "@/lib/api/suppliers";
+import { createOrder } from "@/lib/api/orders";
+import { useToast } from "@/hooks/use-toast";
 
 interface Supplier {
     id: number;
@@ -25,10 +27,30 @@ interface Supplier {
     status: string;
 }
 
+interface FormData {
+    supplier_id: string;
+    priority: string;
+    required_by: string;
+    notes: string;
+    products: Array<{
+        product_id: number;
+        qty: number;
+        unit: string;
+    }>;
+}
+
 export function PlaceOrderPage() {
+    const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [suppliers, setSuppliers] = useState<Supplier[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [formData, setFormData] = useState<FormData>({
+        supplier_id: "",
+        priority: "",
+        required_by: "",
+        notes: "",
+        products: []
+    });
 
     useEffect(() => {
         async function loadSuppliers() {
@@ -45,13 +67,56 @@ export function PlaceOrderPage() {
         loadSuppliers();
     }, []);
 
+    const handleInputChange = (field: keyof FormData, value: string) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+    const handleProductsChange = (products: Array<{ product_id: number; qty: number; unit: string }>) => {
+        setFormData(prev => ({
+            ...prev,
+            products
+        }));
+    };
+
     const onSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         setIsLoading(true);
-        // Simulate API call
-        setTimeout(() => {
+
+        try {
+            // Hardcoding hospital_id as 1 for now - in real app would come from auth context
+            const payload = {
+                ...formData,
+                hospital_id: "1"
+            };
+
+            await createOrder(payload);
+
+            toast({
+                title: "Order placed successfully",
+                description: "Your order has been submitted and is being processed.",
+            });
+
+            // Reset form
+            setFormData({
+                supplier_id: "",
+                priority: "",
+                required_by: "",
+                notes: "",
+                products: []
+            });
+        } catch (err) {
+            console.error('Error submitting order:', err);
+            toast({
+                title: "Error placing order",
+                description: "There was a problem submitting your order. Please try again.",
+                variant: "destructive",
+            });
+        } finally {
             setIsLoading(false);
-        }, 1000);
+        }
     };
 
     return (
@@ -66,7 +131,11 @@ export function PlaceOrderPage() {
                         <div className="space-y-6">
                             <div className="space-y-2">
                                 <Label>Supplier</Label>
-                                <Select required>
+                                <Select
+                                    value={formData.supplier_id}
+                                    onValueChange={(value) => handleInputChange('supplier_id', value)}
+                                    required
+                                >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select supplier" />
                                     </SelectTrigger>
@@ -92,35 +161,46 @@ export function PlaceOrderPage() {
 
                             <div className="space-y-2">
                                 <Label>Priority</Label>
-                                <Select required>
+                                <Select
+                                    value={formData.priority}
+                                    onValueChange={(value) => handleInputChange('priority', value)}
+                                    required
+                                >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select priority" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="3">Low</SelectItem>
-                                        <SelectItem value="2">Normal</SelectItem>
-                                        <SelectItem value="1">High</SelectItem>
+                                        <SelectItem value="1">Normal</SelectItem>
+                                        <SelectItem value="2">Urgent</SelectItem>
+                                        <SelectItem value="3">Emergency</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
 
                             <div className="space-y-2">
                                 <Label>Required By</Label>
-                                <Input type="date" required />
+                                <Input
+                                    type="date"
+                                    value={formData.required_by}
+                                    onChange={(e) => handleInputChange('required_by', e.target.value)}
+                                    required
+                                />
                             </div>
 
                             <div className="space-y-2">
                                 <Label>Additional Notes</Label>
                                 <Input
                                     placeholder="Any special instructions or requirements"
+                                    value={formData.notes}
+                                    onChange={(e) => handleInputChange('notes', e.target.value)}
                                 />
                             </div>
                         </div>
                     </Card>
 
                     <div className="space-y-6">
-                        <ProductSelector />
-                        <OrderSummary />
+                        <ProductSelector onProductsChange={handleProductsChange} />
+                        <OrderSummary products={formData.products} />
                     </div>
                 </div>
 

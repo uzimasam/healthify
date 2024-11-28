@@ -14,14 +14,18 @@ import { fetchProducts, Product } from "@/lib/api/products";
 
 interface OrderItem {
     id: string;
-    productId: string;
-    quantity: number;
+    product_id: number;
+    qty: number;
     unit: string;
 }
 
-export function ProductSelector() {
+interface ProductSelectorProps {
+    onProductsChange: (products: Array<{ product_id: number; qty: number; unit: string }>) => void;
+}
+
+export function ProductSelector({ onProductsChange }: ProductSelectorProps) {
     const [items, setItems] = useState<OrderItem[]>([
-        { id: "1", productId: "", quantity: 0, unit: "" },
+        { id: "1", product_id: 0, qty: 0, unit: "" },
     ]);
     const [products, setProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -45,10 +49,23 @@ export function ProductSelector() {
         loadProducts();
     }, []);
 
+    useEffect(() => {
+        // Filter out incomplete items and format for parent component
+        const validItems = items
+            .filter(item => item.product_id && item.qty > 0)
+            .map(({ product_id, qty, unit }) => ({
+                product_id,
+                qty,
+                unit
+            }));
+
+        onProductsChange(validItems);
+    }, [items, onProductsChange]);
+
     const addItem = () => {
         setItems([
             ...items,
-            { id: Math.random().toString(), productId: "", quantity: 0, unit: "" },
+            { id: Math.random().toString(), product_id: 0, qty: 0, unit: "" },
         ]);
     };
 
@@ -58,14 +75,14 @@ export function ProductSelector() {
         }
     };
 
-    const updateItem = (id: string, field: keyof OrderItem, value: string | number) => {
+    const updateItem = (id: string, field: keyof OrderItem, value: number | string) => {
         setItems(items.map(item => {
             if (item.id === id) {
-                if (field === 'productId' && typeof value === 'string') {
-                    const product = products.find(p => p.ID.toString() === value);
+                if (field === 'product_id') {
+                    const product = products.find(p => p.ID === Number(value));
                     return {
                         ...item,
-                        [field]: value,
+                        [field]: Number(value),
                         unit: product?.unit || ''
                     };
                 }
@@ -101,8 +118,8 @@ export function ProductSelector() {
                     <div key={item.id} className="flex items-center gap-4">
                         <div className="flex-1">
                             <Select
-                                value={item.productId}
-                                onValueChange={(value) => updateItem(item.id, 'productId', value)}
+                                value={item.product_id ? String(item.product_id) : ""}
+                                onValueChange={(value) => updateItem(item.id, 'product_id', Number(value))}
                             >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select product" />
@@ -118,7 +135,7 @@ export function ProductSelector() {
                                         </SelectItem>
                                     ) : (
                                         products.map((product) => (
-                                            <SelectItem key={product.ID} value={product.ID.toString()}>
+                                            <SelectItem key={product.ID} value={String(product.ID)}>
                                                 {product.name} (${product.price})
                                             </SelectItem>
                                         ))
@@ -131,8 +148,8 @@ export function ProductSelector() {
                             placeholder="Qty"
                             className="w-24"
                             min="1"
-                            value={item.quantity || ''}
-                            onChange={(e) => updateItem(item.id, 'quantity', parseInt(e.target.value) || 0)}
+                            value={item.qty || ''}
+                            onChange={(e) => updateItem(item.id, 'qty', Number(e.target.value))}
                         />
                         <div className="w-28">
                             <Input
