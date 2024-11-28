@@ -28,3 +28,8 @@ func Contains(slice []string, item string) bool {
 func Join(slice []string, sep string) string {
 	return fmt.Sprintf("%s", slice)
 }
+
+// func ToJSON converts an array to a JSON string
+func ToJSON(data interface{}) string {
+	return fmt.Sprintf("%v", data)
+}

@@ -221,12 +221,14 @@ func getAndHandleSupplierHospitalID(orderInput *models.OrderInput) (string, erro
 				}
 			}
 		}
+		reqs := utils.Join(requirements, ", ")
+		jsonRequirements := utils.ToJSON(reqs)
 		newSupplierHospital := models.SupplierHospital{
 			SupplierID:    orderInput.SupplierID,
 			HospitalID:    orderInput.HospitalID,
 			RequestCode:   newRequestCode,
 			RequestStatus: "pending",
-			Requirements:  utils.Join(requirements, ", "),
+			Requirements:  jsonRequirements,
 			Rating: 	  0,
 			SupplyStatus:  "pending",
 			Status:        "active",

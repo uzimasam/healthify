@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,9 +7,39 @@ import { Search, Filter, Clock } from "lucide-react";
 import { OrderList } from "@/components/hospital/orders/OrderList";
 import { OrderTracking } from "@/components/hospital/orders/OrderTracking";
 import { PendingDeliveries } from "@/components/hospital/orders/PendingDeliveries";
+import { fetchActiveOrders } from "@/lib/api/orders";
 
 export function ActiveOrdersPage() {
     const [searchQuery, setSearchQuery] = useState("");
+    const [orders, setOrders] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        async function loadOrders() {
+            try {
+                setIsLoading(true);
+                const data = await fetchActiveOrders();
+                setOrders(data);
+                setError(null);
+            } catch (err) {
+                setError('Failed to load orders. Please try again later.');
+                console.error('Error loading orders:', err);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        loadOrders();
+    }, []);
+
+    // Calculate statistics from orders
+    const processingOrders = orders.filter(order => order.status === "pending").length;
+    const inTransitOrders = orders.filter(order => order.status === "in_transit").length;
+    const arrivingToday = orders.filter(order => {
+        const today = new Date().toISOString().split('T')[0];
+        return order.expected_delivery === today;
+    }).length;
 
     return (
         <div className="flex-1 space-y-6 p-8 pt-6">
@@ -24,7 +54,7 @@ export function ActiveOrdersPage() {
                         <span className="text-sm font-medium">Processing</span>
                     </div>
                     <div className="mt-4">
-                        <span className="text-3xl font-bold">5</span>
+                        <span className="text-3xl font-bold">{processingOrders}</span>
                     </div>
                 </Card>
 
@@ -34,7 +64,7 @@ export function ActiveOrdersPage() {
                         <span className="text-sm font-medium">In Transit</span>
                     </div>
                     <div className="mt-4">
-                        <span className="text-3xl font-bold">3</span>
+                        <span className="text-3xl font-bold">{inTransitOrders}</span>
                     </div>
                 </Card>
 
@@ -44,7 +74,7 @@ export function ActiveOrdersPage() {
                         <span className="text-sm font-medium">Arriving Today</span>
                     </div>
                     <div className="mt-4">
-                        <span className="text-3xl font-bold">2</span>
+                        <span className="text-3xl font-bold">{arrivingToday}</span>
                     </div>
                 </Card>
             </div>
@@ -65,25 +95,38 @@ export function ActiveOrdersPage() {
                 </Button>
             </div>
 
-            <Tabs defaultValue="all" className="space-y-4">
-                <TabsList>
-                    <TabsTrigger value="all">All Orders</TabsTrigger>
-                    <TabsTrigger value="tracking">Order Tracking</TabsTrigger>
-                    <TabsTrigger value="pending">Pending Deliveries</TabsTrigger>
-                </TabsList>
+            {error ? (
+                <div className="text-center p-8 text-red-500">
+                    {error}
+                    <Button
+                        variant="outline"
+                        className="ml-4"
+                        onClick={() => window.location.reload()}
+                    >
+                        Retry
+                    </Button>
+                </div>
+            ) : (
+                <Tabs defaultValue="all" className="space-y-4">
+                    <TabsList>
+                        <TabsTrigger value="all">All Orders</TabsTrigger>
+                        <TabsTrigger value="tracking">Order Tracking</TabsTrigger>
+                        <TabsTrigger value="pending">Pending Deliveries</TabsTrigger>
+                    </TabsList>
 
-                <TabsContent value="all">
-                    <OrderList searchQuery={searchQuery} />
-                </TabsContent>
+                    <TabsContent value="all">
+                        <OrderList searchQuery={searchQuery} />
+                    </TabsContent>
 
-                <TabsContent value="tracking">
-                    <OrderTracking />
-                </TabsContent>
+                    <TabsContent value="tracking">
+                        <OrderTracking />
+                    </TabsContent>
 
-                <TabsContent value="pending">
-                    <PendingDeliveries />
-                </TabsContent>
-            </Tabs>
+                    <TabsContent value="pending">
+                        <PendingDeliveries />
+                    </TabsContent>
+                </Tabs>
+            )}
         </div>
     );
 }
