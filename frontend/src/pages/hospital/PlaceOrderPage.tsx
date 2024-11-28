@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,9 +13,37 @@ import {
 import { ProductSelector } from "@/components/hospital/orders/ProductSelector";
 import { OrderSummary } from "@/components/hospital/orders/OrderSummary";
 import { ShoppingCart, Plus } from "lucide-react";
+import { fetchSuppliers } from "@/lib/api/suppliers";
+
+interface Supplier {
+    id: number;
+    name: string;
+    type: string;
+    email: string;
+    phone: string;
+    niche: string;
+    status: string;
+}
 
 export function PlaceOrderPage() {
     const [isLoading, setIsLoading] = useState(false);
+    const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        async function loadSuppliers() {
+            try {
+                const data = await fetchSuppliers();
+                setSuppliers(data);
+                setError(null);
+            } catch (err) {
+                setError('Failed to load suppliers. Please try again later.');
+                console.error('Error loading suppliers:', err);
+            }
+        }
+
+        loadSuppliers();
+    }, []);
 
     const onSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -43,9 +71,21 @@ export function PlaceOrderPage() {
                                         <SelectValue placeholder="Select supplier" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="medtech">MedTech Supplies Inc.</SelectItem>
-                                        <SelectItem value="global">Global Healthcare Solutions</SelectItem>
-                                        <SelectItem value="premier">Premier Medical Supplies</SelectItem>
+                                        {error ? (
+                                            <SelectItem value="error" disabled>
+                                                Error loading suppliers
+                                            </SelectItem>
+                                        ) : suppliers.length === 0 ? (
+                                            <SelectItem value="none" disabled>
+                                                No suppliers available
+                                            </SelectItem>
+                                        ) : (
+                                            suppliers.map((supplier) => (
+                                                <SelectItem key={supplier.id} value={supplier.id.toString()}>
+                                                    {supplier.name} ({supplier.niche})
+                                                </SelectItem>
+                                            ))
+                                        )}
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -57,9 +97,9 @@ export function PlaceOrderPage() {
                                         <SelectValue placeholder="Select priority" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="normal">Normal</SelectItem>
-                                        <SelectItem value="urgent">Urgent</SelectItem>
-                                        <SelectItem value="emergency">Emergency</SelectItem>
+                                        <SelectItem value="3">Low</SelectItem>
+                                        <SelectItem value="2">Normal</SelectItem>
+                                        <SelectItem value="1">High</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
