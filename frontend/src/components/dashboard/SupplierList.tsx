@@ -8,15 +8,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { format } from "date-fns";
 
 
 interface Supplier {
   id: string;
   name: string;
+  city: string;
+  code: string;
   status: string;
   reliability: number;
   hospitals: number;
-  lastDelivery: string;
+  created_at: string;
 }
 
 interface SupplierListProps {
@@ -29,10 +32,10 @@ export function SupplierList({ suppliers }: SupplierListProps) {
       <TableHeader>
         <TableRow>
           <TableHead>Name</TableHead>
+          <TableHead>Location</TableHead>
           <TableHead>Status</TableHead>
-          <TableHead>Reliability Score</TableHead>
           <TableHead>Connected Hospitals</TableHead>
-          <TableHead>Last Delivery</TableHead>
+          <TableHead>Created</TableHead>
           <TableHead>Actions</TableHead>
         </TableRow>
       </TableHeader>
@@ -40,6 +43,7 @@ export function SupplierList({ suppliers }: SupplierListProps) {
         {suppliers.map((supplier) => (
           <TableRow key={supplier.id}>
             <TableCell className="font-medium">{supplier.name}</TableCell>
+            <TableCell>{supplier.city ? supplier.city : 'Nairobi'} - {supplier.code ? supplier.code : 'NBO'}</TableCell>
             <TableCell>
               <Badge
                 variant={supplier.status === "active" ? "default" : "secondary"}
@@ -47,9 +51,8 @@ export function SupplierList({ suppliers }: SupplierListProps) {
                 {supplier.status}
               </Badge>
             </TableCell>
-            <TableCell>{supplier.reliability}%</TableCell>
             <TableCell>{supplier.hospitals}</TableCell>
-            <TableCell>{supplier.lastDelivery}</TableCell>
+            <TableCell>{format(new Date(supplier.created_at), "MMM dd, yyyy")}</TableCell>
             <TableCell>
               <Button variant="ghost" size="sm">
                 View Details

@@ -42,6 +42,7 @@ func main() {
 	{
 		supplierRoutes.Post("/add-product", routes.AddProduct)
 		supplierRoutes.Get("/products", routes.GetProducts)
+		supplierRoutes.Get("/data/:id", routes.GetSupplierData)
 	}
 
 	app.Listen(":8020")

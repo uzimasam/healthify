@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"strconv"
 	"healthify/backend/models"
 	"healthify/backend/storage"
 	"healthify/backend/utils"
@@ -8,6 +9,27 @@ import (
 	"github.com/kataras/iris/v12"
 	"gorm.io/gorm"
 )
+
+// GetSupplierData returns a supplier with their products, connected hospitals, and organization data
+func GetSupplierData(ctx iris.Context) {
+	id := ctx.Params().Get("id")
+	// get the supplier with the given id along with their products and connected hospitals from function GetSupplierWithProductsAndHospitals() in models/Supplier.go 
+	supplierID, err := strconv.ParseUint(id, 10, 32)
+	if err != nil {
+		utils.CreateError(iris.StatusBadRequest, "Invalid ID", "The provided ID is not valid", ctx)
+		return
+	}
+	supplier := models.GetSupplierWithProductsOrdersAndHospitals(uint(supplierID))
+	if supplier.ID == 0 {
+		utils.CreateError(iris.StatusNotFound, "Supplier not found", "A supplier with this ID does not exist", ctx)
+		return
+	}
+
+	ctx.StopWithJSON(iris.StatusOK, iris.Map{
+		"message":  "Supplier data",
+		"supplier": supplier,
+	})
+}
 
 // GetProducts returns a list of products
 func GetProducts(ctx iris.Context) {

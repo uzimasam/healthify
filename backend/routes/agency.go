@@ -12,11 +12,11 @@ import (
 )
 
 const (
-	supplierCompliantCountQuery    = "SELECT COUNT(*) FROM organizations WHERE type = 'supplier' AND compliance = true"
-	supplierNonCompliantCountQuery = "SELECT COUNT(*) FROM organizations WHERE type = 'supplier' AND compliance = false"
-	hospitalCountQuery             = "SELECT COUNT(*) FROM organizations WHERE type = 'hospital'"
-	suppliersQuery                 = "SELECT * FROM organizations WHERE type = 'supplier'"
 	hospitalsQuery                 = "SELECT * FROM organizations WHERE type = 'hospital'"
+	suppliersQuery                 = "SELECT * FROM organizations WHERE type = 'supplier'"
+	activeSuppliersQuery           = "SELECT * FROM suppliers LEFT JOIN organizations ON organizations.id = suppliers.org_id WHERE compliance = true"
+	pendingSuppliersQuery          = "SELECT * FROM suppliers LEFT JOIN organizations ON organizations.id = suppliers.org_id WHERE compliance = false"
+	lowStockProductsQuery          = "SELECT * FROM products WHERE stock < min_stock"
 )
 
 // GetSuppliers returns a list of suppliers
@@ -183,84 +183,63 @@ func AddHospital(ctx iris.Context) {
 
 // GetAgencyDashboard returns the dashboard data for an agency
 func GetAgencyDashboard(ctx iris.Context) {
-	// count the number of organizations where the type is supplier and compliance is true
-	supplierCompliantCount := getSupplierCompliantCount()
-	// count the number of organizations where the type is supplier and compliance is false
-	supplierNonCompliantCount := getSupplierNonCompliantCount()
-	// count the number of organizations where the type is hospital
-	hospitalCount := getHospitalCount()
+	// get all the hospitals
+	hospitals := getHospitals()
 	// get all the suppliers
 	suppliers := getSuppliers()
+	// get the active suppliers
+	activeSuppliers := activeSuppliers()
+	// get the pending suppliers
+	pendingSuppliers := pendingSuppliers()
+	// get the low stock products
+	lowStockProducts := lowStockProducts()
 	ctx.StopWithJSON(iris.StatusOK, iris.Map{
 		"message": "Agency dashboard",
 		"dashboard": iris.Map{
-			"supplierCompliantCount":    supplierCompliantCount,
-			"supplierNonCompliantCount": supplierNonCompliantCount,
-			"hospitalCount":             hospitalCount,
+			"hospitalCount":             len(hospitals),
+			"activeSupplierCount":       len(activeSuppliers),
+			"pendingSupplierCount":      len(pendingSuppliers),
+			"lowStockProductCount":      len(lowStockProducts),
+		},
+		"hospitals": iris.Map{
+			"count": len(hospitals),
+			"list":  hospitals,
 		},
 		"suppliers": iris.Map{
 			"count":   len(suppliers),
 			"list":    suppliers,
-			"active":  activeSuppliers(suppliers),
-			"pending": pendingSuppliers(suppliers),
+			"active":  activeSuppliers,
+			"pending": pendingSuppliers,
 		},
 	})
 }
 
-func getSupplierCompliantCount() int {
-	var supplierCompliantCount int
-	storage.DB.Raw(supplierCompliantCountQuery).Scan(&supplierCompliantCount)
-	return supplierCompliantCount
+func getHospitals() []models.OrganizationOutput {
+	var hospitals []models.OrganizationOutput
+	storage.DB.Raw(hospitalsQuery).Scan(&hospitals)
+	return hospitals
 }
 
-func getSupplierNonCompliantCount() int {
-	var supplierNonCompliantCount int
-	storage.DB.Raw(supplierNonCompliantCountQuery).Scan(&supplierNonCompliantCount)
-	return supplierNonCompliantCount
-}
-
-func getHospitalCount() int {
-	var hospitalCount int
-	storage.DB.Raw(hospitalCountQuery).Scan(&hospitalCount)
-	return hospitalCount
-}
-
-func getSuppliers() []models.OrganizationOutput {
-	var suppliers []models.OrganizationOutput
+func getSuppliers() []models.Supplier {
+	var suppliers []models.Supplier
 	storage.DB.Raw(suppliersQuery).Scan(&suppliers)
 	return suppliers
 }
 
-func activeSuppliers(suppliers []models.OrganizationOutput) []models.OrganizationOutput {
+func activeSuppliers() []models.OrganizationOutput {
 	var activeSuppliers []models.OrganizationOutput
-	for _, supplier := range suppliers {
-		// join the organizations and suppliers tables on the organization id
-		var supplierData models.Supplier
-		storage.DB.Raw("SELECT * FROM suppliers WHERE org_id = ?", supplier.ID).Scan(&supplierData)
-		if supplierData.Compliance {
-			activeSuppliers = append(activeSuppliers, supplier)
-		}
-	}
-	// if activeSuppliers is nil, return an empty slice instead
-	if activeSuppliers == nil {
-		return []models.OrganizationOutput{}
-	}
+	storage.DB.Raw(activeSuppliersQuery).Scan(&activeSuppliers)
 	return activeSuppliers
 }
 
-func pendingSuppliers(suppliers []models.OrganizationOutput) []models.OrganizationOutput {
+func pendingSuppliers() []models.OrganizationOutput {
 	var pendingSuppliers []models.OrganizationOutput
-	for _, supplier := range suppliers {
-		// join the organizations and suppliers tables on the organization id
-		var supplierData models.Supplier
-		storage.DB.Raw("SELECT * FROM suppliers WHERE org_id = ?", supplier.ID).Scan(&supplierData)
-		if !supplierData.Compliance {
-			pendingSuppliers = append(pendingSuppliers, supplier)
-		}
-	}
-	// if pendingSuppliers is nil, return an empty slice instead
-	if pendingSuppliers == nil {
-		return []models.OrganizationOutput{}
-	}
+	storage.DB.Raw(pendingSuppliersQuery).Scan(&pendingSuppliers)
 	return pendingSuppliers
+}
+
+func lowStockProducts() []models.Product {
+	var lowStockProducts []models.Product
+	storage.DB.Raw(lowStockProductsQuery).Scan(&lowStockProducts)
+	return lowStockProducts
 }

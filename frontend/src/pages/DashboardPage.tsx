@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { AlertCircle, ArrowUpRight, Box, Building2, Users } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ export function DashboardPage() {
             setActiveHospitals(data.activeHospitals);
             setPendingApprovals(data.pendingApprovals);
             setSuppliers(data.suppliers);
+            setLowStockAlerts(data.lowStockAlerts);
         }
         fetchDashboardData();
     }, []);
@@ -34,10 +36,12 @@ export function DashboardPage() {
         <div className="flex-1 space-y-6 p-8 pt-6">
             <div className="flex items-center justify-between">
                 <h2 className="text-3xl font-bold tracking-tight">Agency Dashboard</h2>
+                <Link to="/dashboard/reports">
                 <Button>
                     Generate Report
                     <ArrowUpRight className="ml-2 h-4 w-4" />
                 </Button>
+                </Link>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
