@@ -21,8 +21,9 @@ const (
 
 // GetSuppliers returns a list of suppliers
 func GetSuppliers(ctx iris.Context) {
-	var suppliers []models.OrganizationOutput
-	storage.DB.Raw(suppliersQuery).Scan(&suppliers)
+	var suppliers []models.SupplierWithOrg
+	// get all the suppliers using getSuppliers function
+	suppliers = getSuppliers()
 	ctx.StopWithJSON(iris.StatusOK, iris.Map{
 		"message":   "Suppliers",
 		"suppliers": suppliers,
