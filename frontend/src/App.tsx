@@ -38,6 +38,7 @@ import { OrderHistoryPage } from './pages/hospital/OrderHistoryPage';
 import { HospitalAnalyticsPage } from './pages/hospital/HospitalAnalyticsPage';
 import { NotificationsPage } from './pages/hospital/NotificationsPage';
 import { HospitalSettingsPage } from './pages/hospital/HospitalSettingsPage';
+import { SupplierDetailPage } from './pages/supplier/SupplierDetailPage';
 
 const queryClient = new QueryClient();
 
@@ -121,6 +122,7 @@ function App() {
             <Route path="/dashboard/analytics" element={<ProtectedRoute><DashboardLayout><AnalyticsPage /></DashboardLayout></ProtectedRoute>} />
             <Route path='/dashboard/reports' element={<ProtectedRoute><DashboardLayout><ReportsPage /></DashboardLayout></ProtectedRoute>} />
             <Route path="/dashboard/settings" element={<ProtectedRoute><DashboardLayout><SettingsPage /></DashboardLayout></ProtectedRoute>} />
+            <Route path="/dashboard/supplier/:id" element={<ProtectedRoute><DashboardLayout><SupplierDetailPage /></DashboardLayout></ProtectedRoute>} />
 
             {/* Hospital Dashboard Routes */}
             <Route path="/hospital/dashboard" element={<HospitalDashboardLayout><HospitalDashboard /></HospitalDashboardLayout>} />

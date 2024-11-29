@@ -37,9 +37,36 @@ type SupplierDataSummed struct {
 	Insurance       bool             `json:"insurance"`
 	CreatedAt       string           `json:"created_at"`
 	UpdatedAt       string           `json:"updated_at"`
+	Organization    Organization     `gorm:"foreignKey:OrgID" json:"organization"`
 	Products        []ProductSummary `gorm:"foreignKey:SupplierID" json:"products"`
 	Hospitals       []Hospital       `gorm:"many2many:supplier_hospitals" json:"hospitals"`
 	Orders          []OrderInfo      `json:"orders"`
+}
+
+type SupplierWithOrg struct {
+	ID              uint         `json:"id"`
+	OrgID           uint         `json:"org_id"`
+	Compliance      bool         `json:"compliance"`
+	BusinessLicense bool         `json:"business_license"`
+	Insurance       bool         `json:"insurance"`
+	CreatedAt       string       `json:"created_at"`
+	UpdatedAt       string       `json:"updated_at"`
+	Org             Organization `gorm:"foreignKey:OrgID" json:"org"`
+}
+
+func GetSupplierWithOrg(SupplierID uint) SupplierWithOrg {
+	var supplier Supplier
+	storage.DB.Preload("Org").Where("id = ?", SupplierID).First(&supplier)
+	return SupplierWithOrg{
+		ID:              supplier.ID,
+		OrgID:           supplier.OrgID,
+		Compliance:      supplier.Compliance,
+		BusinessLicense: supplier.BusinessLicense,
+		Insurance:       supplier.Insurance,
+		CreatedAt:       supplier.CreatedAt,
+		UpdatedAt:       supplier.UpdatedAt,
+		Org:             supplier.Org,
+	}
 }
 
 func GetSupplierProducts(SupplierID uint) []ProductSummary {
@@ -86,7 +113,7 @@ func GetSupplierWithProductsOrdersAndHospitals(SupplierID uint) SupplierDataSumm
 	var supplierData SupplierDataSummed
 
 	// Load Supplier and its relationships. Keep in mind that Order is not a direct relationship of Supplier, it instead is linked through SupplierHospital
-	storage.DB.Preload("Products").Preload("Hospitals").Preload("SupplierHospitals").Preload("SupplierHospitals.Hospital").Preload("SupplierHospitals.Orders").Where("id = ?", SupplierID).First(&supplier)
+	storage.DB.Preload("Org").Preload("Products").Preload("Hospitals").Preload("SupplierHospitals").Preload("SupplierHospitals.Hospital").Preload("SupplierHospitals.Orders").Where("id = ?", SupplierID).First(&supplier)
 
 	// Map Supplier fields to SupplierDataSummed
 	supplierData.ID = supplier.ID
@@ -115,6 +142,7 @@ func GetSupplierWithProductsOrdersAndHospitals(SupplierID uint) SupplierDataSumm
 			UpdatedAt:   product.UpdatedAt,
 		})
 	}
+	supplierData.Organization = supplier.Org
 	supplierData.Hospitals = supplier.Hospitals
 	for _, supplierHospital := range supplier.SupplierHospitals {
 		for _, order = range supplierHospital.Orders {

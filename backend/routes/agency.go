@@ -220,10 +220,16 @@ func getHospitals() []models.OrganizationOutput {
 	return hospitals
 }
 
-func getSuppliers() []models.Supplier {
+func getSuppliers() []models.SupplierWithOrg {
 	var suppliers []models.Supplier
 	storage.DB.Raw(suppliersQuery).Scan(&suppliers)
-	return suppliers
+	// get the suppliers with their organizations
+	var suppliersWithOrg []models.SupplierWithOrg
+	for _, supplier := range suppliers {
+		supplierWithOrg := models.GetSupplierWithOrg(supplier.ID)
+		suppliersWithOrg = append(suppliersWithOrg, supplierWithOrg)
+	}
+	return suppliersWithOrg
 }
 
 func activeSuppliers() []models.OrganizationOutput {
